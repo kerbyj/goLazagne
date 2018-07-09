@@ -12,39 +12,48 @@ type lifetime struct {
 }
 
 type CredAttr struct {
-	Keyword *string
+	Keyword *[]byte
 	Flags uint32
 	Valuesize uint32
-	Value *string
+	Value *[]byte
 }
 
 type Creds struct {
 	FLAG uint32
 	TYPE uint32
-	TargetName *string
-	Comment *string
+	TargetName *[]byte
+	Comment *[]byte
 	LastWritten lifetime
 	CredentialBlobSize uint32
-	CredentialBlob *string
+	CredentialBlob *[]byte
 	Persist uint32
 	AttrCount uint32
 	Attributes CredAttr
-	TargetAlias *string
-	Username *string
+	TargetAlias *[]byte
+	Username *[]byte
+}
+
+var (
+
+	modkernel32 = syscall.NewLazyDLL("kernel32.dll")
+
+	procGetLastError       = modkernel32.NewProc("GetLastError")
+	dlladvapi32  = syscall.NewLazyDLL("Advapi32.dll")
+	CreaEnumerateA   = dlladvapi32.NewProc("CredEnumerateA")
+)
+
+func GetLastError() uint32 {
+	ret, _, _ := procGetLastError.Call()
+	return uint32(ret)
 }
 
 func CredManModuleStart(){
-	var (
-		dlladvapi32  = syscall.NewLazyDLL("Advapi32.dll")
-		CreaEnumerateA   = dlladvapi32.NewProc("CredEnumerateA")
-	)
 	var count uint64
-	var creds Creds
+	var creds **Creds
 	CreaEnumerateA.Call(0, 0, uintptr(unsafe.Pointer(&count)), uintptr(unsafe.Pointer(&creds)))
+	log.Println(&creds)
+	log.Println(GetLastError())
 
-	for i :=0; i < int(count); i++{
-		log.Print(creds)
-	}
 }
 
 func CredmanExtractDataRun(){

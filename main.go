@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"goLaZagne/common"
 	"goLaZagne/browsers"
-	"goLaZagne/windows"
+	"log"
+	"strings"
 )
 
 type SuccessResult struct {
 	App string
-	Data []string
+	Data []common.CredentialsData
 }
 
 func packData(result common.ExtractDataResult, name string) []byte{
@@ -20,8 +21,8 @@ func packData(result common.ExtractDataResult, name string) []byte{
 }
 
 func main() {
-	var AllBrowsersData []string
-
+	var AllBrowsersData []common.CredentialsData
+	var AllData []string
 	if resultChrome := browsers.ChromeExtractDataRun(); resultChrome.Success{
 		AllBrowsersData = append(AllBrowsersData, resultChrome.Data...)
 	}
@@ -31,16 +32,16 @@ func main() {
 	if resultMozilla := browsers.MozillaExtractDataRun(); resultMozilla.Success {
 		AllBrowsersData = append(AllBrowsersData, resultMozilla.Data...)
 	}
-	var BrowsersData = common.ExtractDataResult{false, common.RemoveDuplicates(AllBrowsersData)}
-	var _ = packData(BrowsersData, "browsers")
 
-	//log.Println(string(data))
+	var BrowsersData = common.ExtractDataResult{false, common.RemoveDuplicates(AllBrowsersData)}
+	var data = packData(BrowsersData, "browsers")
+	AllData = append(AllData, string(data))
+
 	var resultWifi = wifi.WifiExtractDataRun()
 	if resultWifi.Success{
-		var _ = packData(resultWifi, "wifi")
-		//log.Println(string(data))
+		var data = packData(resultWifi, "wifi")
+		AllData = append(AllData, string(data))
 	}
-
-	windows.CredmanExtractDataRun()
+	log.Println("["+strings.Join(AllData, ",")+"]")
 
 }

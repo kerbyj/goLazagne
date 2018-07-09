@@ -5,7 +5,6 @@ import (
 	"syscall"
 	"github.com/aglyzov/charmap"
 	"strings"
-	"fmt"
 	"goLaZagne/common"
 )
 
@@ -35,7 +34,9 @@ func WifiExtractDataRun() common.ExtractDataResult{
 			users = append(users, strings.TrimSpace(strings.Split(lines[i], ":")[1]))
 		}
 	}
-	//WTF? Missing values
+
+	var Result common.ExtractDataResult
+	var data []common.CredentialsData
 	for i:=0; i < len(users); i++{
 		var paramWifi = []string{
 			"wlan",
@@ -45,23 +46,27 @@ func WifiExtractDataRun() common.ExtractDataResult{
 			"key=clear",
 		}
 
-		var Result common.ExtractDataResult
 		var output = ExecCommand("netsh", paramWifi)
 		var lines = strings.Split(output, "\r\n")
-		var data []string
+
 		for j:=range lines{
 			if strings.Contains(lines[j], "Содержимое ключа"){ //TODO Английский
-
-				data = append(data, fmt.Sprintf("%s %s", users[i], strings.TrimSpace(strings.Split(lines[j], ":")[1])))
+				var (
+					dataAdd = common.CredentialsData{
+						"local",
+						users[i],
+						strings.TrimSpace(strings.Split(lines[j], ":")[1]),
+					}
+				)
+				data = append(data, dataAdd)
 			}
 		}
 		if len(data) == 0 {
 			Result.Success = false
 			return Result
 		}
-		Result.Data = data
-		Result.Success = true
-		return Result
 	}
-	return common.ExtractDataResult{false, []string{""}}
+	Result.Data = data
+	Result.Success = true
+	return Result
 }

