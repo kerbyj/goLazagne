@@ -4,8 +4,8 @@ import (
 	"goLaZagne/wifi"
 	"encoding/json"
 	"goLaZagne/common"
-	"log"
 	"goLaZagne/browsers"
+	"goLaZagne/windows"
 )
 
 type SuccessResult struct {
@@ -32,12 +32,15 @@ func main() {
 		AllBrowsersData = append(AllBrowsersData, resultMozilla.Data...)
 	}
 	var BrowsersData = common.ExtractDataResult{false, common.RemoveDuplicates(AllBrowsersData)}
-	var data = packData(BrowsersData, "browsers")
+	var _ = packData(BrowsersData, "browsers")
 
-	log.Println(string(data))
+	//log.Println(string(data))
 	var resultWifi = wifi.WifiExtractDataRun()
 	if resultWifi.Success{
-		var data = packData(resultWifi, "wifi")
-		log.Println(string(data))
+		var _ = packData(resultWifi, "wifi")
+		//log.Println(string(data))
 	}
+
+	windows.CredmanExtractDataRun()
+
 }
