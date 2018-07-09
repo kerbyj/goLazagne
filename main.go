@@ -1,20 +1,43 @@
 package main
 
 import (
-	"goLaZagne/browsers"
+	"goLaZagne/wifi"
+	"encoding/json"
+	"goLaZagne/common"
 	"log"
+	"goLaZagne/browsers"
 )
 
+type SuccessResult struct {
+	App string
+	Data []string
+}
+
+func packData(result common.ExtractDataResult, name string) []byte{
+	var dataForMarshal = SuccessResult{name, result.Data}
+	var returning, _ = json.Marshal(dataForMarshal)
+	return returning
+}
+
 func main() {
-	//log.Println("Chrome started")
-	//browsers.ChromeExtractDataRun()
+	var AllBrowsersData []string
 
-	//log.Println("Opera started")
-	//browsers.OperaExtractDataRun()
+	if resultChrome := browsers.ChromeExtractDataRun(); resultChrome.Success{
+		AllBrowsersData = append(AllBrowsersData, resultChrome.Data...)
+	}
+	if resultOpera := browsers.OperaExtractDataRun(); resultOpera.Success{
+		AllBrowsersData = append(AllBrowsersData, resultOpera.Data...)
+	}
+	if resultMozilla := browsers.MozillaExtractDataRun(); resultMozilla.Success {
+		AllBrowsersData = append(AllBrowsersData, resultMozilla.Data...)
+	}
+	var BrowsersData = common.ExtractDataResult{false, common.RemoveDuplicates(AllBrowsersData)}
+	var data = packData(BrowsersData, "browsers")
 
-	log.Println("Mozilla started")
-	browsers.MozillaExtractDataRun()
-
-	//log.Println("WiFi started")
-	//wifi.WifiExtractDataRun()
+	log.Println(string(data))
+	var resultWifi = wifi.WifiExtractDataRun()
+	if resultWifi.Success{
+		var data = packData(resultWifi, "wifi")
+		log.Println(string(data))
+	}
 }
