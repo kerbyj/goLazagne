@@ -18,7 +18,7 @@ func ExecCommand(command string, params []string) string{
 	return string(output)
 }
 
-func WifiExtractDataRun() common.ExtractDataResult{
+func WifiExtractDataRun() common.ExtractWifiData {
 	params := []string{
 		"wlan",
 		"show",
@@ -35,8 +35,8 @@ func WifiExtractDataRun() common.ExtractDataResult{
 		}
 	}
 
-	var Result common.ExtractDataResult
-	var data []common.CredentialsData
+	var Result common.ExtractWifiData
+	var data []common.WifiData
 	for i:=0; i < len(users); i++{
 		var paramWifi = []string{
 			"wlan",
@@ -52,8 +52,7 @@ func WifiExtractDataRun() common.ExtractDataResult{
 		for j:=range lines{
 			if strings.Contains(lines[j], "Содержимое ключа"){ //TODO Английский
 				var (
-					dataAdd = common.CredentialsData{
-						"local",
+					dataAdd = common.WifiData{
 						users[i],
 						strings.TrimSpace(strings.Split(lines[j], ":")[1]),
 					}

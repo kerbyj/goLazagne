@@ -21,9 +21,19 @@ type CredentialsData struct{
 	Pass string
 }
 
-type ExtractDataResult struct{
+type WifiData struct {
+	Name string
+	Pass string
+}
+
+type ExtractCredentialsResult struct{
 	Success bool
 	Data []CredentialsData
+}
+
+type ExtractWifiData struct {
+	Success bool
+	Data []WifiData
 }
 
 const Fail = "fail"

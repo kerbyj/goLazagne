@@ -45,9 +45,9 @@ func OperaModuleStart(path string) ([]common.CredentialsData, bool){
 	return nil, false
 }
 
-func OperaExtractDataRun() common.ExtractDataResult{
-	var Result common.ExtractDataResult
-	var EmptyResult = common.ExtractDataResult{false,Result.Data}
+func OperaExtractDataRun() common.ExtractCredentialsResult {
+	var Result common.ExtractCredentialsResult
+	var EmptyResult = common.ExtractCredentialsResult{false,Result.Data}
 	for i:=range operaPathsUserData {
 		if _, err := os.Stat(operaPathsUserData[i]); err == nil {
 			var data, success = OperaModuleStart(operaPathsUserData[i])

