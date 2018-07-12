@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"goLaZagne/common"
 	"goLaZagne/browsers"
+	"goLaZagne/windows"
 	"log"
 	"strings"
 )
@@ -32,6 +33,13 @@ func packWifiData(result common.ExtractWifiData, name string) []byte{
 }
 
 func main() {
+
+
+	windows.CredmanExtractDataRun()
+
+	return
+
+
 	var AllBrowsersData []common.CredentialsData
 	var AllData []string
 	if resultChrome := browsers.ChromeExtractDataRun(); resultChrome.Success{
