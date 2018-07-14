@@ -271,7 +271,7 @@ type AsnPrivKeyBSDDB struct{
 
 type NudeBytesAsnKeyBSDDB struct {
 	P1 int
-	Keyid int
+	Keyid asn1.RawValue
 	P3 int
 	Key asn1.RawValue
 	P5 int
@@ -296,25 +296,12 @@ func mozillaExtractSecretKey(keyData map[string]string, globalSalt string, maste
 		entrySalt   = privKeyEntryASN1.Data.DataSalt.EntrySalt
 	)
 	var privKey = mozillaDecrypt3DES(globalSalt, "", entrySalt, privKeyData)
-
 	var PrivKeyRaw AsnPrivKeyBSDDB
 	asn1.Unmarshal(privKey, &PrivKeyRaw)
-
-	var (
-		nudeBytes        = string(PrivKeyRaw.OtherData.Bytes)       // Эта хрень не хотела нормально читаться в структуру.
-		allDataFromAsn1  = strings.Split(nudeBytes, string("\x02")) // TODO КОСТЫЛЬ
-		key              = []byte(allDataFromAsn1[4][1:])
-	)
-	/*
-	Ну не читается она нормально. Почему? А хрен его знает, всё по нулям.
-	Вроде по namespace проблем нет, саму структуру asn1 правильно распарсил
-	var KeyStruct NudeBytesAsnKeyBSDDB
+	var KeyStruct NudeBytesAsnKeyBSDDB // Читаем нужный нам key из sequence
 	asn1.Unmarshal(PrivKeyRaw.OtherData.Bytes, &KeyStruct)
-	log.Println(base64.StdEncoding.EncodeToString([]byte(PrivKeyRaw.OtherData.Bytes)))
-	log.Printf("%x\n", KeyStruct.Key.FullBytes)
-	log.Printf("%x\n", key)
-	*/
-	return key
+
+	return KeyStruct.Key.Bytes
 }
 
 func getMozillaKey(profilePath string, app string) []byte{
