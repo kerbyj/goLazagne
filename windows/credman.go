@@ -78,7 +78,7 @@ func CredManModuleStart() common.ExtractWifiData{
 		var tmpElems = strings.Split(credentialData[i], " ")
 		log.Println(tmpElems[0], strings.Join(tmpElems[1:], ""))
 
-		if len(tmpElems) == 0{
+		if len(tmpElems[0]) == 0{
 			continue
 		}
 
