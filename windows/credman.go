@@ -71,7 +71,7 @@ func CredManModuleStart() common.ExtractWifiData{
 		output, _ = cmd.Output()
 		credentialData = strings.Split(string(output), "\n")
 		Result common.ExtractWifiData
-		data []common.WifiData
+		data []common.NamePass
 	)
 
 	for i:=range credentialData{
@@ -82,7 +82,7 @@ func CredManModuleStart() common.ExtractWifiData{
 			continue
 		}
 
-		var dataAdd = common.WifiData{
+		var dataAdd = common.NamePass{
 			tmpElems[0],
 			strings.Join(tmpElems[1:], ""),
 			//"success",

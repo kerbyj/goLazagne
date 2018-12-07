@@ -6,18 +6,16 @@ import (
 	"goLaZagne/common"
 	"goLaZagne/wifi"
 	"goLaZagne/windows"
-	"log"
-	"strings"
 )
 
 type SuccessCredentialsResult struct {
 	App  string
-	Data []common.CredentialsData
+	Data []common.UrlNamePass
 }
 
 type SuccessWifiResult struct {
 	App  string
-	Data []common.WifiData
+	Data []common.NamePass
 }
 
 func packBrowsersData(result common.ExtractCredentialsResult, name string) []byte {
@@ -32,17 +30,8 @@ func packWifiData(result common.ExtractWifiData, name string) []byte {
 	return returning
 }
 
-func StartExtractData() {
-	var AllData []string
-
-	var windowsResult = windows.CredManModuleStart()
-	if windowsResult.Success {
-		var data = packWifiData(windowsResult, "windows")
-		AllData = append(AllData, string(data))
-	}
-	//log.Println("["+strings.Join(AllData, ",")+"]")
-
-	var AllBrowsersData []common.CredentialsData
+func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
+	var AllBrowsersData []common.UrlNamePass
 	if resultChrome := browsers.ChromeExtractDataRun(); resultChrome.Success {
 		AllBrowsersData = append(AllBrowsersData, resultChrome.Data...)
 	}
@@ -53,15 +42,23 @@ func StartExtractData() {
 		AllBrowsersData = append(AllBrowsersData, resultMozilla.Data...)
 	}
 
-	var BrowsersData = common.ExtractCredentialsResult{false, common.RemoveDuplicates(AllBrowsersData)}
-	var data = packBrowsersData(BrowsersData, "browsers")
-	AllData = append(AllData, string(data))
+	return AllBrowsersData, len(AllBrowsersData)
+}
 
+func ExtractWifiData() ([]common.NamePass, int){
 	var resultWifi = wifi.WifiExtractDataRun()
 	if resultWifi.Success {
-		var data = packWifiData(resultWifi, "wifi")
-		AllData = append(AllData, string(data))
+		return resultWifi.Data, len(resultWifi.Data)
 	}
-	log.Println("[" + strings.Join(AllData, ",") + "]")
-
+	return nil, 0
 }
+
+func ExtractCredmanData() ([]common.NamePass, int) {
+	var windowsResult = windows.CredManModuleStart()
+	if windowsResult.Success {
+		return windowsResult.Data, len(windowsResult.Data)
+	}
+	return nil, 0
+}
+
+

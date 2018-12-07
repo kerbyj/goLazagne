@@ -30,13 +30,13 @@ func WifiExtractDataRun() common.ExtractWifiData {
 	var users []string
 
 	for i:=range lines{
-		if strings.Contains(lines[i], "профили пользователей"){ //TODO ENGLISH
+		if strings.Contains(lines[i], "All User"){ //TODO ENGLISH
 			users = append(users, strings.TrimSpace(strings.Split(lines[i], ":")[1]))
 		}
 	}
 
 	var Result common.ExtractWifiData
-	var data []common.WifiData
+	var data []common.NamePass
 	for i:=0; i < len(users); i++{
 		var paramWifi = []string{
 			"wlan",
@@ -50,13 +50,14 @@ func WifiExtractDataRun() common.ExtractWifiData {
 		var lines = strings.Split(output, "\r\n")
 
 		for j:=range lines{
-			if strings.Contains(lines[j], "Содержимое ключа"){ //TODO Английский
+			if strings.Contains(lines[j], "Key content"){ //TODO Английский
 				var (
-					dataAdd = common.WifiData{
+					dataAdd = common.NamePass{
 						users[i],
 						strings.TrimSpace(strings.Split(lines[j], ":")[1]),
 					}
 				)
+				println(dataAdd.Name)
 				data = append(data, dataAdd)
 			}
 		}

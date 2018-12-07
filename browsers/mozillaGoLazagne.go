@@ -1,25 +1,22 @@
 package browsers
 
 import (
-	"os"
-	"goLaZagne/common"
 	"bufio"
-	"strings"
-	"log"
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
-	"encoding/asn1"
-	"crypto/sha1"
-	"crypto/hmac"
-	"crypto/des"
-	"crypto/cipher"
 	"bytes"
-	"io/ioutil"
-	"encoding/json"
+	"crypto/cipher"
+	"crypto/des"
+	"crypto/hmac"
+	"crypto/sha1"
+	"database/sql"
+	"encoding/asn1"
 	"encoding/base64"
-	"encoding/binary"
-	"sort"
-	"encoding/hex"
+	"encoding/json"
+	_ "github.com/mattn/go-sqlite3"
+	"goLaZagne/common"
+	"io/ioutil"
+	"log"
+	"os"
+	"strings"
 )
 
 var (
@@ -123,18 +120,6 @@ func mozillaDecrypt3DES(globalSalt, master_password string, entrySalt, encrypted
 
 //Проверка правильности данных
 func mozillaIsMasterPasswordCorrect(item1, item2 string) (string, string, string){
-	/*
-	SEQUENCE {
-		SEQUENCE {
-			OBJECTIDENTIFIER 1.2.840.113549.1.12.5.1.3
-			SEQUENCE {
-				OCTETSTRING entry_salt_for_passwd_check
-				INTEGER 01
-			}
-		}
-		OCTETSTRING encrypted_password_check
-	}
-	*/
 
 	var sourceData AsnSourceDataMasterPassword
 	var _, err1 = asn1.Unmarshal([]byte(item2), &sourceData)
@@ -168,145 +153,7 @@ func mozillaManageMasterPassword(item1, item2 string) (string, string, string, b
 	return globalSalt, masterPassword, entrySalt, true
 }
 
-func mozillaGetLongBE(header []byte, offset int) uint32{
-	return binary.BigEndian.Uint32(header[offset:offset+4])
-}
-
-func mozillaGetShortLE(header []byte, offset int) uint16{
-	return binary.LittleEndian.Uint16(header[offset:offset+2])
-}
-
-type offsetsRange []uint16
-
-func (a offsetsRange) Len() int           { return len(a) }
-func (a offsetsRange) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a offsetsRange) Less(i, j int) bool { return a[i] < a[j] }
-
-func mozillaReadBsdDB(path string) map[string]string{
-	var readDB, err = os.Open(path)
-	if err != nil{
-		log.Println(err.Error())
-	}
-	var buf = make([]byte, 60)
-	readDB.Read(buf)
-	var magic = mozillaGetLongBE(buf, 0)
-	if magic != 0x61561{
-		log.Println("Bad magic number")
-	}
-	var version = mozillaGetLongBE(buf, 4)
-	if version != 2{
-		log.Println("wrong version")
-	}
-
-	var (
-		pagesize = mozillaGetLongBE(buf, 12)
-		nkeys = mozillaGetLongBE(buf, 0x38)
-		readkeys uint32 = 0
-		page uint32 = 1
-		db1 []string
-	)
-
-	for readkeys < nkeys {
-		readDB.Seek(int64(pagesize*page), 0)
-		var offsets = make([]byte, (nkeys+1)*4+2)
-		readDB.Read(offsets)
-		var(
-			offsetVals offsetsRange
-			i           = 0
-			nval       uint16 = 0
-			val        uint16 = 1
-			keys        = 0
-		)
-
-		for nval != val{
-			keys += 1
-			var key = mozillaGetShortLE(offsets, 2 + i)
-			val = mozillaGetShortLE(offsets, 4 + i)
-			nval = mozillaGetShortLE(offsets, 8 + i)
-			offsetVals = append(offsetVals, key + uint16(pagesize*page))
-			offsetVals = append(offsetVals, val + uint16(pagesize*page))
-			readkeys += 1
-			i += 4
-		}
-
-		offsetVals = append(offsetVals, uint16(pagesize*(page+1)))
-		sort.Sort(offsetVals)
-
-		for i:=0; i < keys*2; i++{
-			readDB.Seek(int64(offsetVals[i]), 0)
-			var dataBuf = make([]byte, offsetVals[i+1] - offsetVals[i])
-			readDB.Read(dataBuf)
-			db1 = append(db1, string(dataBuf))
-		}
-		page += 1
-	}
-
-	var db = make(map[string]string)
-
-	for i:=0; i < len(db1); i+=2{
-		db[db1[i+1]] = db1[i]
-	}
-	return db
-}
-
-type AsnSecretKeyBSDDB struct{
-	Data struct {
-		ObjIdent asn1.ObjectIdentifier
-		DataSalt struct {
-			EntrySalt []byte
-			P int
-		}
-	}
-	PrivKeyData []byte
-}
-
-type AsnPrivKeyBSDDB struct{
-	P int
-	Data struct {
-		ObjIdent asn1.ObjectIdentifier
-		DataNull asn1.RawValue
-	}
-	OtherData asn1.RawValue
-}
-
-type NudeBytesAsnKeyBSDDB struct {
-	P1 int
-	Keyid asn1.RawValue
-	P3 int
-	Key asn1.RawValue
-	P5 int
-	P6 int
-	P7 int
-	P8 int
-	P9 int
-}
-
-func mozillaExtractSecretKey(keyData map[string]string, globalSalt string, masterPassword string) []byte{
-	var(
-		name, _ = hex.DecodeString("f8000000000000000000000000000001")
-		privKeyEntry = keyData[string(name)]
-		saltLen = int(privKeyEntry[1])
-		nameLen = int(privKeyEntry[2])
-		privKeyEntryASN1 AsnSecretKeyBSDDB
-	)
-	asn1.Unmarshal([]byte(privKeyEntry[3+saltLen+nameLen:]), &privKeyEntryASN1)
-
-	var(
-		privKeyData = privKeyEntryASN1.PrivKeyData
-		entrySalt   = privKeyEntryASN1.Data.DataSalt.EntrySalt
-	)
-	var privKey = mozillaDecrypt3DES(globalSalt, "", entrySalt, privKeyData)
-	var PrivKeyRaw AsnPrivKeyBSDDB
-	asn1.Unmarshal(privKey, &PrivKeyRaw)
-	var KeyStruct NudeBytesAsnKeyBSDDB // Читаем нужный нам key из sequence
-	asn1.Unmarshal(PrivKeyRaw.OtherData.Bytes, &KeyStruct)
-
-	return KeyStruct.Key.Bytes
-}
-
 func getMozillaKey(profilePath string, app string) []byte{
-	log.Println("Read ", app)
-
 	db, err := sql.Open("sqlite3", profilePath+"\\key4.db")
 	if err!=nil{
 		return nil
@@ -391,7 +238,7 @@ func mozillaGetLoginData(profile string) []mozillaLoginData {
 	return LoginsList
 }
 
-func mozillaModuleStart(data AppInfo) ([]common.CredentialsData, bool){
+func mozillaModuleStart(data AppInfo) ([]common.UrlNamePass, bool){
 	if _, err := os.Stat(data.path); err == nil {
 		var profiles= getFirefoxProfiles(data.path)
 		for i := range profiles {
@@ -406,7 +253,7 @@ func mozillaModuleStart(data AppInfo) ([]common.CredentialsData, bool){
 			if len(credentials) == 0 || len(key)==0 || key == nil{
 				return nil, false
 			}
-			var credentialsData []common.CredentialsData
+			var credentialsData []common.UrlNamePass
 			for j := range credentials{
 				var (
 					loginWithTrash    = tripleDesDecrypt(credentials[j].userName.cipherText, key, credentials[j].userName.Iv)
@@ -424,7 +271,7 @@ func mozillaModuleStart(data AppInfo) ([]common.CredentialsData, bool){
 				if data.name == "TB"{
 					credentials[j].hostname="mail"
 				}
-				credentialsData = append(credentialsData, common.CredentialsData{credentials[j].hostname, login, password})
+				credentialsData = append(credentialsData, common.UrlNamePass{credentials[j].hostname, login, password})
 			}
 			return credentialsData, true
 		}

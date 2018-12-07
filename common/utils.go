@@ -15,25 +15,25 @@ var (
 
 )
 
-type CredentialsData struct{
+type UrlNamePass struct{
 	Url string
 	Username string
 	Pass string
 }
 
-type WifiData struct {
+type NamePass struct {
 	Name string
 	Pass string
 }
 
 type ExtractCredentialsResult struct{
 	Success bool
-	Data []CredentialsData
+	Data []UrlNamePass
 }
 
 type ExtractWifiData struct {
 	Success bool
-	Data []WifiData
+	Data []NamePass
 }
 
 const Fail = "fail"
@@ -50,10 +50,10 @@ func RandStringRunes(n int) string {
 }
 
 
-func RemoveDuplicates(elements []CredentialsData) []CredentialsData {
+func RemoveDuplicates(elements []UrlNamePass) []UrlNamePass {
 	// Use map to record duplicates as we find them.
 	encountered := map[string]bool{}
-	result := []CredentialsData{}
+	result := []UrlNamePass{}
 
 	for v := range elements {
 		if encountered[elements[v].Pass+elements[v].Url+elements[v].Username] == true {
