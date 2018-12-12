@@ -12,6 +12,7 @@ var (
 
 	UserHome = os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
 	AppData  = os.Getenv("APPDATA")
+	LocalAppData = os.Getenv("LOCALAPPDATA")
 
 )
 

