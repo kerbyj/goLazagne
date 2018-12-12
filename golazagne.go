@@ -1,32 +1,18 @@
 package GoLazagne
 
 import (
-	"goLaZagne/browsers"
-	"goLaZagne/common"
-	"goLaZagne/wifi"
-	"goLaZagne/windows"
+	"bitbucket.org/j_kerby/golazagne/browsers"
+	"bitbucket.org/j_kerby/golazagne/common"
+	"bitbucket.org/j_kerby/golazagne/wifi"
+	"bitbucket.org/j_kerby/golazagne/windows"
 )
-
-type SuccessCredentialsResult struct {
-	App  string
-	Data []common.UrlNamePass
-}
-
-type SuccessWifiResult struct {
-	App  string
-	Data []common.NamePass
-}
 
 func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
 	var AllBrowsersData []common.UrlNamePass
 	if resultChrome := browsers.ChromeExtractDataRun(); resultChrome.Success {
 		AllBrowsersData = append(AllBrowsersData, resultChrome.Data...)
 	}
-	/*
-	if resultOpera := browsers.OperaExtractDataRun(); resultOpera.Success {
-		AllBrowsersData = append(AllBrowsersData, resultOpera.Data...)
-	}
-	*/
+
 	if resultMozilla := browsers.MozillaExtractDataRun(); resultMozilla.Success {
 		AllBrowsersData = append(AllBrowsersData, resultMozilla.Data...)
 	}
@@ -34,7 +20,7 @@ func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
 	return AllBrowsersData, len(AllBrowsersData)
 }
 
-func ExtractWifiData() ([]common.NamePass, int){
+func ExtractWifiData() ([]common.NamePass, int) {
 	var resultWifi = wifi.WifiExtractDataRun()
 	if resultWifi.Success {
 		return resultWifi.Data, len(resultWifi.Data)
@@ -51,9 +37,13 @@ func ExtractCredmanData() ([]common.NamePass, int) {
 }
 
 type AllDataStruct struct {
-	wifiData []common.NamePass
-	browserData []common.UrlNamePass
-	credmanData []common.NamePass
+	WifiData    []common.NamePass    `json:"wifi"`
+	BrowserData []common.UrlNamePass `json:"browser"`
+	CredmanData []common.NamePass    `json:"credman"`
+}
+
+type CommonStructFlags struct {
+	Debug bool
 }
 
 func ExtractAllData() (AllDataStruct, int) {
@@ -64,14 +54,14 @@ func ExtractAllData() (AllDataStruct, int) {
 	var outDataStruct AllDataStruct
 
 	if lengthWiFiData > 0 {
-		outDataStruct.wifiData = wifiData
+		outDataStruct.WifiData = wifiData
 	}
 	if lengthBrowserData > 0 {
-		outDataStruct.browserData = browserData
+		outDataStruct.BrowserData = browserData
 	}
 	if lengthCredmanData > 0 {
-		outDataStruct.credmanData = credmanData
+		outDataStruct.CredmanData = credmanData
 	}
 
-	return outDataStruct, lengthCredmanData+lengthBrowserData+lengthWiFiData
+	return outDataStruct, lengthCredmanData + lengthBrowserData + lengthWiFiData
 }

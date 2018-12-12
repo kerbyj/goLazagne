@@ -1,17 +1,15 @@
 package browsers
 
 import (
+	"bitbucket.org/j_kerby/golazagne/common"
 	"database/sql"
 	"fmt"
 	"github.com/buger/jsonparser"
-	"goLaZagne/common"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
-
-func ChromeModuleStart(path string) ([]common.UrlNamePass, bool){
+func ChromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 	if _, err := os.Stat(path + "\\Local State"); err == nil {
 		fileWithUserData, err := ioutil.ReadFile(path + "\\Local state")
 		if err != nil {
@@ -25,23 +23,22 @@ func ChromeModuleStart(path string) ([]common.UrlNamePass, bool){
 			return nil
 		}, "info_cache")
 
-
 		var temporaryDbNames []string
-		for i:= range profileNames{
+		for i := range profileNames {
 			dbPath := fmt.Sprintf("%s\\%s\\Login data", path, profileNames[i])
 			if _, err := os.Stat(dbPath); err == nil {
 				//randomDbName := common.RandStringRunes(10)
 
 				file, _ := ioutil.TempFile(os.TempDir(), "prefix")
 				err := common.CopyFile(dbPath, file.Name())
-				if err != nil{
+				if err != nil {
 					return nil, false
 				}
 				temporaryDbNames = append(temporaryDbNames, file.Name())
 			}
 		}
 
-		for dbNum := range temporaryDbNames{
+		for dbNum := range temporaryDbNames {
 			db, err := sql.Open("sqlite3", temporaryDbNames[dbNum])
 			if err != nil {
 				//log.Panic(err.Error())
@@ -53,45 +50,44 @@ func ChromeModuleStart(path string) ([]common.UrlNamePass, bool){
 			}
 			var actionUrl, username, password string
 			var data []common.UrlNamePass
-			for rows.Next(){
+			for rows.Next() {
 				rows.Scan(&actionUrl, &username, &password)
 				//data = append(data, fmt.Sprintf("%s %s %s", actionUrl, username, common.Win32CryptUnprotectData(password, false)))
 				data = append(data, common.UrlNamePass{actionUrl, username, common.Win32CryptUnprotectData(password, false)})
 			}
 
 			os.Remove(temporaryDbNames[dbNum])
-			log.Println("Removing temp db")
+			// log.Println("Removing temp db")
 			return data, true
 		}
 	}
 	return nil, false
 }
 
-
 var (
 	chromePathsUserData = []string{
-		common.LocalAppData+"\\Google\\Chrome\\User Data", // Google chrome
-		common.AppData+"\\Opera Software\\Opera Stable", // Opera
-		common.LocalAppData+"\\Yandex\\YandexBrowser\\User Data", // Yandex browser
-		common.LocalAppData+"\\Vivaldi\\User Data", // Vivaldi
-		common.LocalAppData+"\\CentBrowser\\User Data", // CentBrowser
-		common.LocalAppData+"\\Amigo\\User Data", // Amigo (RIP)
-		common.LocalAppData+"\\Chromium\\User Data", // Chromium
-		common.LocalAppData+"\\Sputnik\\Sputnik\\User Data", // Sputnik
+		common.LocalAppData + "\\Google\\Chrome\\User Data",        // Google chrome
+		common.AppData + "\\Opera Software\\Opera Stable",          // Opera
+		common.LocalAppData + "\\Yandex\\YandexBrowser\\User Data", // Yandex browser
+		common.LocalAppData + "\\Vivaldi\\User Data",               // Vivaldi
+		common.LocalAppData + "\\CentBrowser\\User Data",           // CentBrowser
+		common.LocalAppData + "\\Amigo\\User Data",                 // Amigo (RIP)
+		common.LocalAppData + "\\Chromium\\User Data",              // Chromium
+		common.LocalAppData + "\\Sputnik\\Sputnik\\User Data",      // Sputnik
 	}
 )
 
 func ChromeExtractDataRun() common.ExtractCredentialsResult {
 	var Result common.ExtractCredentialsResult
-	var EmptyResult = common.ExtractCredentialsResult{false,Result.Data}
+	var EmptyResult = common.ExtractCredentialsResult{false, Result.Data}
 
 	var allCreds []common.UrlNamePass
 
-	for i:=range chromePathsUserData {
+	for i := range chromePathsUserData {
 		if _, err := os.Stat(chromePathsUserData[i]); err == nil {
 
 			var data, success = ChromeModuleStart(chromePathsUserData[i])
-			if success && data != nil{
+			if success && data != nil {
 				//Result.Data = append(Result.Data, data...)
 				allCreds = append(allCreds, data...)
 			}
@@ -104,7 +100,7 @@ func ChromeExtractDataRun() common.ExtractCredentialsResult {
 		Result.Success = true
 		return common.ExtractCredentialsResult{
 			Success: true,
-			Data: allCreds,
+			Data:    allCreds,
 		}
 	}
 }

