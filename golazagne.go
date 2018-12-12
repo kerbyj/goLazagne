@@ -1,7 +1,6 @@
 package GoLazagne
 
 import (
-	"encoding/json"
 	"goLaZagne/browsers"
 	"goLaZagne/common"
 	"goLaZagne/wifi"
@@ -16,18 +15,6 @@ type SuccessCredentialsResult struct {
 type SuccessWifiResult struct {
 	App  string
 	Data []common.NamePass
-}
-
-func packBrowsersData(result common.ExtractCredentialsResult, name string) []byte {
-	var dataForMarshal = SuccessCredentialsResult{name, result.Data}
-	var returning, _ = json.Marshal(dataForMarshal)
-	return returning
-}
-
-func packWifiData(result common.ExtractWifiData, name string) []byte {
-	var dataForMarshal = SuccessWifiResult{name, result.Data}
-	var returning, _ = json.Marshal(dataForMarshal)
-	return returning
 }
 
 func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
@@ -61,4 +48,28 @@ func ExtractCredmanData() ([]common.NamePass, int) {
 	return nil, 0
 }
 
+type AllDataStruct struct {
+	wifiData []common.NamePass
+	browserData []common.UrlNamePass
+	credmanData []common.NamePass
+}
 
+func ExtractAllData() (AllDataStruct, int) {
+	var wifiData, lengthWiFiData = ExtractWifiData()
+	var browserData, lengthBrowserData = ExtractBrowserCredentials()
+	var credmanData, lengthCredmanData = ExtractCredmanData()
+
+	var outDataStruct AllDataStruct
+
+	if lengthWiFiData > 0 {
+		outDataStruct.wifiData = wifiData
+	}
+	if lengthBrowserData > 0 {
+		outDataStruct.browserData = browserData
+	}
+	if lengthCredmanData > 0 {
+		outDataStruct.credmanData = credmanData
+	}
+
+	return outDataStruct, lengthCredmanData+lengthBrowserData+lengthWiFiData
+}
