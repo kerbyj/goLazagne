@@ -1,17 +1,20 @@
-# goLazagne
+### goLazagne
 
-**Supported feautures**
+## Supported feautures
 
 * Browsers
+	* Google Chrome 
+	* Mozilla Firefox 
+	* Opera
+	* Yandex Browser
 
-    Google Chrome, Mozilla Firefox, Opera
 * Mail
-
-    Thunderbird
+    * Thunderbird
 
 * Windows
+    * Credential Manager
 
-    Credential Manager
+* WiFi passwords
+	* WPA2-PSK
 
-* WiFi password
 

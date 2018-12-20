@@ -162,9 +162,15 @@ func getMozillaKey(profilePath string, app string) []byte {
 	}
 	rows, err := db.Query("SELECT item1, item2 FROM metadata WHERE id = 'password'")
 	var item1, item2 string
-
+	if err != nil {
+		return nil
+	}
 	for rows.Next() {
-		rows.Scan(&item1, &item2)
+		err := rows.Scan(&item1, &item2)
+		if err != nil {
+			return nil
+		}
+
 		var globalSalt, _, _, status = mozillaManageMasterPassword(item1, item2)
 
 		if !status {
