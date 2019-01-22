@@ -1,10 +1,10 @@
 package browsers
 
 import (
-	"github.com/kerbyj/goLazagne/common"
 	"database/sql"
 	"fmt"
 	"github.com/buger/jsonparser"
+	"github.com/kerbyj/goLazagne/common"
 	"io/ioutil"
 	"os"
 )
