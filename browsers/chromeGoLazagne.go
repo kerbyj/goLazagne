@@ -1,7 +1,7 @@
 package browsers
 
 import (
-	"bitbucket.org/j_kerby/golazagne/common"
+	"github.com/kerbyj/goLazagne/common"
 	"database/sql"
 	"fmt"
 	"github.com/buger/jsonparser"

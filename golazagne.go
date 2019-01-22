@@ -1,11 +1,11 @@
 package GoLazagne
 
 import (
-	"bitbucket.org/j_kerby/golazagne/browsers"
-	"bitbucket.org/j_kerby/golazagne/common"
-	"bitbucket.org/j_kerby/golazagne/filesystem"
-	"bitbucket.org/j_kerby/golazagne/wifi"
-	"bitbucket.org/j_kerby/golazagne/windows"
+	"github.com/kerbyj/goLazagne/browsers"
+	"github.com/kerbyj/goLazagne/common"
+	"github.com/kerbyj/goLazagne/filesystem"
+	"github.com/kerbyj/goLazagne/wifi"
+	"github.com/kerbyj/goLazagne/windows"
 )
 
 func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {

@@ -1,7 +1,7 @@
 package wifi
 
 import (
-	"bitbucket.org/j_kerby/golazagne/common"
+	"github.com/kerbyj/goLazagne/common"
 	"github.com/aglyzov/charmap"
 	"os/exec"
 	"strings"

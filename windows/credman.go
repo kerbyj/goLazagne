@@ -4,8 +4,8 @@ import (
 	"log"
 	"syscall"
 
-	"bitbucket.org/j_kerby/golazagne/common"
 	"encoding/base64"
+	"github.com/kerbyj/goLazagne/common"
 	"io/ioutil"
 	"os"
 	"os/exec"
