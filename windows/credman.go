@@ -117,7 +117,7 @@ func CredManModuleStart() common.ExtractWifiData {
 	//	log.Println((*creds)[0])
 
 
-		var time = (uint64(test[0].LastWritten.HighDateTime)<<32 )+uint64(test[0].LastWritten.LowDateTime) // Что это за колдунство?
+		var time = (uint64(test[0].LastWritten.HighDateTime)<<32 )+uint64(test[0].LastWritten.LowDateTime)
 
 		//log.Printf("time : %d",time)
 		//log.Println(test)
