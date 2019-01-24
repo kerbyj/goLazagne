@@ -3,10 +3,8 @@
 ## Supported feautures
 
 * Browsers
-	* Google Chrome 
-	* Mozilla Firefox 
-	* Opera
-	* Yandex Browser
+	* Chromium-based
+	* Mozilla Firefox
 
 * Mail
     * Thunderbird
@@ -15,7 +13,10 @@
     * Credential Manager // windows 10 only
 
 * WiFi passwords
-	* WPA2-PSK
+	
+## Planned
+
+* WPA2 Enterprise
 
 #### Example
 
