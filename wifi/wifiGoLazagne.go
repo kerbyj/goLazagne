@@ -18,7 +18,7 @@ func ExecCommand(command string, params []string) string {
 	return string(output)
 }
 
-func WifiExtractDataRun() common.ExtractWifiData {
+func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 	params := []string{
 		"wlan",
 		"show",
@@ -36,7 +36,7 @@ func WifiExtractDataRun() common.ExtractWifiData {
 		}
 	}
 
-	var Result common.ExtractWifiData
+	var Result common.ExtractCredentialsNamePass
 	var data []common.NamePass
 	for i := 0; i < len(users); i++ {
 		var paramWifi = []string{

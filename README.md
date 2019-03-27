@@ -10,7 +10,7 @@
     * Thunderbird
 
 * Windows
-    * Credential Manager // windows 10 only
+    * Credential Manager
 
 * WiFi passwords
 	

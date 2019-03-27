@@ -30,7 +30,7 @@ type ExtractCredentialsResult struct {
 	Data    []UrlNamePass
 }
 
-type ExtractWifiData struct {
+type ExtractCredentialsNamePass struct {
 	Success bool
 	Data    []NamePass
 }
