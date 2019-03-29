@@ -24,7 +24,7 @@
     
 #### Special thanks
 
-* [Nikolay Edigaryev](https://github.com/edigaryev) for [credman module](https://github.com/kerbyj/goLazagne/blob/master/windows/credman.go) module
+* [Nikolay Edigaryev](https://github.com/edigaryev) for [credman](https://github.com/kerbyj/goLazagne/blob/master/windows/credman.go) module
 
 ### Example
 
