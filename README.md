@@ -1,6 +1,6 @@
 ### goLazagne
 
-## Supported feautures
+#### Supported features
 
 * Browsers
 	* Chromium-based
@@ -14,11 +14,19 @@
 
 * WiFi passwords
 	
-## Planned
+#### Roadmap
 
 * WPA2 Enterprise
+* Outlook
+* Windows vault
+* Git
+    * Git passwords
+    
+#### Special thanks
 
-#### Example
+* [Nikolay Edigaryev](https://github.com/edigaryev) for [credman module](https://github.com/kerbyj/goLazagne/blob/master/windows/credman.go) module
+
+### Example
 
 ```go
 package main
@@ -36,7 +44,7 @@ func main() {
     println("Wifi creds:", len(credentials.WifiData))
     
     println("\nEnumerating filesystem. Please wait")
-    var files = GoLazagne.ExtractInterstingFiles()
+    var files = GoLazagne.ExtractInterestingFiles()
     for fileN := range files {
         println(files[fileN])
     }

