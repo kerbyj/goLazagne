@@ -1,4 +1,4 @@
-package GoLazagne
+package goLazagne
 
 import (
 	"github.com/kerbyj/goLazagne/browsers"
@@ -48,6 +48,68 @@ type AllDataStruct struct {
 	CredmanData []common.UrlNamePass `json:"credman"`
 }
 
+//Structure for fine tuning and work with goLazagne
+type LazagneLockPick struct {
+	Browsers          bool
+	BrowsersSpecify   []string // Work with "chromium" and "firefox"
+	CredentialManager bool
+	Wifi              bool
+	Verbosity         int
+	Result            AllDataStruct
+}
+
+func (config LazagneLockPick) ExtractData() {
+
+	// Check for zero values in "Browsers" field
+	if config.Browsers == true {
+		var browserData, lengthBrowserData = ExtractBrowserCredentials()
+
+		if lengthBrowserData > 0 {
+			config.Result.BrowserData = append(config.Result.BrowserData, browserData...)
+		}
+
+	}
+
+	if len(config.BrowsersSpecify) > 0 {
+
+		for i := range config.BrowsersSpecify {
+
+			if config.BrowsersSpecify[i] == "chromium" {
+
+				var chromeExtract = browsers.ChromeExtractDataRun()
+
+				if chromeExtract.Success == true {
+					config.Result.BrowserData = append(config.Result.BrowserData, chromeExtract.Data...)
+				}
+
+			} else if config.BrowsersSpecify[i] == "firefox" {
+
+				var mozillaExtract = browsers.MozillaExtractDataRun()
+
+				if mozillaExtract.Success == true {
+					config.Result.BrowserData = append(config.Result.BrowserData, mozillaExtract.Data...)
+				}
+			}
+		}
+	}
+
+	if config.CredentialManager == true {
+		var credmanData, lengthCredmanData = ExtractCredmanData()
+
+		if lengthCredmanData > 0 {
+			config.Result.CredmanData = credmanData
+		}
+	}
+
+	if config.Wifi == true {
+		var wifiData, lengthWiFiData = ExtractWifiData()
+
+		if lengthWiFiData > 0 {
+			config.Result.WifiData = wifiData
+		}
+
+	}
+}
 
 //Function to extract all credentials from browsers, wifi passwords, and passwords from windows credential manager
 func ExtractAllData() (AllDataStruct, int) {
