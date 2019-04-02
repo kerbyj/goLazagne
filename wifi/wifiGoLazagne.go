@@ -1,8 +1,8 @@
 package wifi
 
 import (
-	"github.com/kerbyj/goLazagne/common"
 	"github.com/aglyzov/charmap"
+	"github.com/kerbyj/goLazagne/common"
 	"os/exec"
 	"strings"
 	"syscall"

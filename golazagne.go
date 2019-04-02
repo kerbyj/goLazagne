@@ -8,7 +8,6 @@ import (
 	"github.com/kerbyj/goLazagne/windows"
 )
 
-
 //Common function for work with browsers. Just call and function return all saved passwords in chromium browsers and firefox
 func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
 	var AllBrowsersData []common.UrlNamePass
