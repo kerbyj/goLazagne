@@ -1,7 +1,6 @@
 package browsers
 
 import (
-	"github.com/kerbyj/goLazagne/common"
 	"bufio"
 	"bytes"
 	"crypto/cipher"
@@ -12,6 +11,7 @@ import (
 	"encoding/asn1"
 	"encoding/base64"
 	"encoding/json"
+	"github.com/kerbyj/goLazagne/common"
 	_ "github.com/mattn/go-sqlite3"
 	"io/ioutil"
 	"log"
@@ -52,7 +52,7 @@ type AsnLoginData struct {
 	CipherText []byte
 }
 
-//Хранение логинов
+//Login storage struct
 type MozillaLogins struct {
 	Logins []struct {
 		Hostname          string `json:"hostname"`
@@ -61,28 +61,26 @@ type MozillaLogins struct {
 	} `json:"logins"`
 }
 
-//Структура для хранения зашифрованных логинов/паролей с IV
+//Ecnrypted login with IV
 type decodedLogindata struct {
 	keyId      []byte
 	Iv         []byte
 	cipherText []byte
 }
 
-//Расшифрованные данные для передачи
+//Unencrypted data
 type mozillaLoginData struct {
 	userName decodedLogindata
 	passWord decodedLogindata
 	hostname string
 }
 
-//Считаем hmac
 func calculateHmac(key, message []byte) []byte {
 	var hm = hmac.New(sha1.New, key)
 	hm.Write(message)
 	return hm.Sum(nil)
 }
 
-//Декодирование 3DES
 func tripleDesDecrypt(crypted, key, iv []byte) []byte {
 	block, err := des.NewTripleDESCipher(key)
 	if err != nil {
@@ -94,10 +92,10 @@ func tripleDesDecrypt(crypted, key, iv []byte) []byte {
 	return origData
 }
 
-//Собираем данные и декодируем 3DES
+//Collect data and decrypt
 func mozillaDecrypt3DES(globalSalt, master_password string, entrySalt, encryptedPasswd []byte) []byte {
 	var (
-		hp    = sha1.Sum([]byte(globalSalt)) //Всё верно
+		hp    = sha1.Sum([]byte(globalSalt))
 		count = 20 - len(entrySalt)
 		adder []byte
 	)
@@ -106,7 +104,7 @@ func mozillaDecrypt3DES(globalSalt, master_password string, entrySalt, encrypted
 	}
 	var (
 		pes = append(entrySalt, adder...)
-		chp = sha1.Sum(append(hp[:], entrySalt...)) //Верно
+		chp = sha1.Sum(append(hp[:], entrySalt...))
 		k1  = calculateHmac(chp[:], append(pes, entrySalt...))
 		tk  = calculateHmac(chp[:], pes)
 		k2  = calculateHmac(chp[:], append(tk, entrySalt...))
@@ -120,7 +118,7 @@ func mozillaDecrypt3DES(globalSalt, master_password string, entrySalt, encrypted
 	return data
 }
 
-//Проверка правильности данных
+//Check data correctness
 func mozillaIsMasterPasswordCorrect(item1, item2 string) (string, string, string) {
 
 	var sourceData AsnSourceDataMasterPassword
@@ -148,8 +146,7 @@ func mozillaIsMasterPasswordCorrect(item1, item2 string) (string, string, string
 func mozillaManageMasterPassword(item1, item2 string) (string, string, string, bool) {
 	var globalSalt, masterPassword, entrySalt = mozillaIsMasterPasswordCorrect(item1, item2)
 	if globalSalt == "" {
-		//log.Println("Master password is used") //TODO Сделать извлечение "сырых" данных для перебора
-		//TODO Вставить вывод ошибок
+		//log.Println("Master password is used") //TODO data extraction for brute force
 		return "", "", "", false
 	}
 	return globalSalt, masterPassword, entrySalt, true
