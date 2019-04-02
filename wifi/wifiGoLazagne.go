@@ -10,7 +10,7 @@ import (
 
 func ExecCommand(command string, params []string) string {
 	cmd_li := exec.Command(command, params...)
-	cmd_li.SysProcAttr = &syscall.SysProcAttr{HideWindow: true} //Это необходимо для того что бы CMD запускалось в скрытом режиме
+	cmd_li.SysProcAttr = &syscall.SysProcAttr{HideWindow: true} //run CMD in hidden mode
 	output, _ := cmd_li.Output()
 	if output != nil && len(output) > 0 {
 		output = charmap.CP866_to_UTF8(output)
@@ -30,7 +30,7 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 	var users []string
 
 	for i := range lines {
-		if strings.Contains(lines[i], "All User") { //TODO ENGLISH
+		if strings.Contains(lines[i], "All User") { //TODO check in multiple languages
 			users = append(users, strings.TrimSpace(strings.Split(lines[i], ":")[1]))
 			//println(strings.TrimSpace(strings.Split(lines[i], ":")[1]))
 		}
@@ -51,7 +51,7 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 		var lines = strings.Split(output, "\r\n")
 
 		for j := range lines {
-			if strings.Contains(lines[j], "Key Content") { //TODO Английский
+			if strings.Contains(lines[j], "Key Content") { //TODO check in multiple languages
 				var (
 					dataAdd = common.NamePass{
 						users[i],
