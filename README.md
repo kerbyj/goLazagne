@@ -2,7 +2,7 @@
 
 ---
 
-#### ⚠️ Disclaimer
+## ⚠️ Disclaimer
 
 1. All the information provided in this project is for educational purposes only and can not be used for law violation or personal gain.
 2. The authors of this project are not responsible for any possible harm caused by the materials of this project.
@@ -10,7 +10,13 @@
 4. We believe only in ethical hacking.
 ---
 
-#### Supported features
+## Description
+
+The **goLazagne** is an open source library for golang used to retrieve passwords stored on local computer.
+
+Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) project.
+
+## Supported features
 
 * Browsers
 	* Chromium-based
@@ -24,7 +30,7 @@
 
 * WiFi passwords
 	
-#### Roadmap
+## Roadmap
 
 * WPA2 Enterprise
 * Outlook
@@ -32,11 +38,11 @@
 * Git
     * Git passwords
     
-#### Special thanks
+## Special thanks
 
 * [Nikolay Edigaryev](https://github.com/edigaryev) for [credman](https://github.com/kerbyj/goLazagne/blob/master/windows/credman.go) module
 
-### Example
+## Example
 
 ```go
 package main
