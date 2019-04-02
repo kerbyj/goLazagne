@@ -1,4 +1,14 @@
-### goLazagne
+# goLazagne
+
+---
+
+#### ⚠️ Disclaimer
+
+1. All the information provided in this project is for educational purposes only and can not be used for law violation or personal gain.
+2. The authors of this project are not responsible for any possible harm caused by the materials of this project.
+3. All information in this repository is intended for development of audit tools and help preventing the hack attacks.
+4. We believe only in ethical hacking.
+---
 
 #### Supported features
 
