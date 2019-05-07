@@ -1,4 +1,6 @@
 # goLazagne
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkerbyj%2FgoLazagne.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkerbyj%2FgoLazagne?ref=badge_shield)
+
 
 ---
 ## ⚠️ Disclaimer
@@ -69,3 +71,7 @@ func main() {
 
 }
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkerbyj%2FgoLazagne.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkerbyj%2FgoLazagne?ref=badge_large)
