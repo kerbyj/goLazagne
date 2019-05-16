@@ -29,16 +29,12 @@ Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) projec
 
 * WiFi passwords
 	
-## Roadmap
+## ToDo (sorted by priority level)
 
-* WPA2 Enterprise.
-
-    The main difficulty is that we need an privilege escalation. Read more in zc00l [research](https://0x00-0x00.github.io/research/2018/11/06/Recovering-Plaintext-Domain-Credentials-From-WPA2-Enterprise-on-a-compromised-host.html).
-
-* Outlook
-* Windows vault
-* Git 
-    * Git passwords
+- [ ] WPA2 Enterprise. The main difficulty is that we need an privilege escalation. Read more in zc00l [research](https://0x00-0x00.github.io/research/2018/11/06/Recovering-Plaintext-Domain-Credentials-From-WPA2-Enterprise-on-a-compromised-host.html).
+- [ ] Windows vault
+- [ ] Outlook
+- [ ] Git 
     
 ## Special thanks
 
@@ -62,7 +58,13 @@ func main() {
     println("Wifi creds:", len(credentials.WifiData))
     
     println("\nEnumerating filesystem. Please wait")
-    var files = goLazagne.ExtractInterestingFiles()
+    
+    var interestingFiles = []string{
+    			"ovpn",
+    			"ssh",
+    		}
+    
+    var files = goLazagne.ExtractInterestingFiles(interestingFiles)
     for fileN := range files {
         println(files[fileN])
     }

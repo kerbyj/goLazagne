@@ -40,9 +40,9 @@ func ExtractCredmanData() ([]common.UrlNamePass, int) {
 	return nil, 0
 }
 
-//Function to search for files on the file system with specific extensions. By default, module search for files with suffixes "ovpn", "pem", "ppk", "cert", "ssh", "kdbx", "id_rsa", "id_dsa". You can put a custom list in the arguments, which will be added to the default list.
-func ExtractInterestingFiles(additionalSuffixes []string) []string {
-	var data = filesystem.FindFiles(additionalSuffixes)
+//Function to search for files on the file system with specific suffixes.
+func ExtractInterestingFiles(suffixes []string) []string {
+	var data = filesystem.FindFiles(suffixes)
 	return data
 }
 
