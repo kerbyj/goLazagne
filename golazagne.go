@@ -22,6 +22,16 @@ func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
 	return AllBrowsersData, len(AllBrowsersData)
 }
 
+// Function that check saved credentials in chromium based browsers
+func ExtractChromiumCredentials() common.ExtractCredentialsResult {
+	return browsers.ChromeExtractDataRun()
+}
+
+// Function that check saved credentials in firefox browser and thunderbird
+func ExtractFirefoxCredentials() common.ExtractCredentialsResult {
+	return browsers.MozillaExtractDataRun()
+}
+
 //Function for extracting WPA2 PSK stored profiles
 func ExtractWifiData() ([]common.NamePass, int) {
 	var resultWifi = wifi.WifiExtractDataRun()
@@ -42,8 +52,7 @@ func ExtractCredmanData() ([]common.UrlNamePass, int) {
 
 //Function to search for files on the file system with specific suffixes.
 func ExtractInterestingFiles(suffixes []string) []string {
-	var data = filesystem.FindFiles(suffixes)
-	return data
+	return filesystem.FindFiles(suffixes)
 }
 
 type AllDataStruct struct {
