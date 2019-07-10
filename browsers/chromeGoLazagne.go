@@ -1,12 +1,12 @@
 package browsers
 
 import (
-	"database/sql"
-	"fmt"
-	"github.com/buger/jsonparser"
-	"github.com/kerbyj/goLazagne/common"
-	"io/ioutil"
-	"os"
+"database/sql"
+"fmt"
+"github.com/buger/jsonparser"
+"github.com/kerbyj/goLazagne/common"
+"io/ioutil"
+"os"
 )
 
 func ChromeModuleStart(path string) ([]common.UrlNamePass, bool) {

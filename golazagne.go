@@ -19,6 +19,10 @@ func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
 		AllBrowsersData = append(AllBrowsersData, resultMozilla.Data...)
 	}
 
+	if resultInternetExplorer := browsers.InternetExplorerExtractDataRun(); resultInternetExplorer.Success {
+		AllBrowsersData = append(AllBrowsersData, resultInternetExplorer.Data...)
+	}
+
 	return AllBrowsersData, len(AllBrowsersData)
 }
 
@@ -30,6 +34,11 @@ func ExtractChromiumCredentials() common.ExtractCredentialsResult {
 // Function that check saved credentials in firefox browser and thunderbird
 func ExtractFirefoxCredentials() common.ExtractCredentialsResult {
 	return browsers.MozillaExtractDataRun()
+}
+
+// Function that check saved credentials in internet explorer and edge
+func ExtractIECredentials()common.ExtractCredentialsResult {
+	return browsers.InternetExplorerExtractDataRun()
 }
 
 //Function for extracting WPA2 PSK stored profiles
