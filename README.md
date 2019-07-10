@@ -20,6 +20,7 @@ Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) projec
 * Browsers
 	* Chromium-based
 	* Mozilla Firefox
+	* Internet Explorer and Edge
 
 * Mail
     * Thunderbird
