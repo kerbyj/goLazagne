@@ -3,14 +3,12 @@ package windows
 import (
 	"encoding/base64"
 	"encoding/hex"
-	"fmt"
 	"log"
 	"syscall"
 	"unicode/utf16"
 	"unsafe"
 
 	"github.com/kerbyj/goLazagne/common"
-	"os"
 )
 
 /*
@@ -141,21 +139,16 @@ func DumpCreds() (out []ParsedCred, err error) {
 	return out, nil
 }
 
-func main2() {
-	creds, err := DumpCreds()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	fmt.Println(creds)
-}
-
 func CredManModuleStart() common.ExtractCredentialsResult {
 
 	var unsuccessfulResult = common.ExtractCredentialsResult{
 		Success: false,
 		Data:    []common.UrlNamePass{},
 	}
+
+	/*
+		Dump credman with WinApi function
+	*/
 
 	creds, err := DumpCreds()
 
