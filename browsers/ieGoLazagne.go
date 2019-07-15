@@ -50,7 +50,7 @@ func internetExplorerModuleStart() ([]common.UrlNamePass, bool) {
 	if len(internetVaultCreds) == 0 {
 		return nil, false
 	}
-
+	
 	return internetVaultCreds, true
 }
 

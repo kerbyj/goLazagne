@@ -146,7 +146,7 @@ func mozillaIsMasterPasswordCorrect(item1, item2 string) (string, string, string
 func mozillaManageMasterPassword(item1, item2 string) (string, string, string, bool) {
 	var globalSalt, masterPassword, entrySalt = mozillaIsMasterPasswordCorrect(item1, item2)
 	if globalSalt == "" {
-		//log.Println("Master password is used") //TODO data extraction for brute force
+		log.Println("Master password is used") //TODO data extraction for brute force
 		return "", "", "", false
 	}
 	return globalSalt, masterPassword, entrySalt, true
@@ -157,7 +157,7 @@ func getMozillaKey(profilePath string, app string) []byte {
 	if err != nil {
 		return nil
 	}
-	rows, err := db.Query("SELECT item1, item2 FROM metadata WHERE id = 'password'")
+	rows, err := db.Query("SELECT item1, item2 FROM metadata WHERE id = 'password';")
 	var item1, item2 string
 	if err != nil {
 		return nil
@@ -176,7 +176,7 @@ func getMozillaKey(profilePath string, app string) []byte {
 		}
 
 		if globalSalt != "" {
-			rows2, _ := db.Query("SELECT a11,a102 FROM nssPrivate")
+			rows2, _ := db.Query("SELECT a11,a102 FROM nssPrivate;")
 			var all, a102 string
 			rows2.Next()
 			rows2.Scan(&all, &a102)
@@ -187,6 +187,7 @@ func getMozillaKey(profilePath string, app string) []byte {
 			var entrySalt = sourceData.Data.Data.Entry
 			var cipherT = sourceData.EncryptedPasswdCheck
 			var key = mozillaDecrypt3DES(globalSalt, "", entrySalt, cipherT)
+			log.Println(key)
 			return key
 		}
 	}
@@ -256,6 +257,8 @@ func mozillaModuleStart(data AppInfo) ([]common.UrlNamePass, bool) {
 				key = key[:24]
 			}
 
+			log.Println("key", key)
+
 			if len(credentials) == 0 || len(key) == 0 || key == nil {
 				return nil, false
 			}
@@ -265,6 +268,7 @@ func mozillaModuleStart(data AppInfo) ([]common.UrlNamePass, bool) {
 					loginWithTrash    = tripleDesDecrypt(credentials[j].userName.cipherText, key, credentials[j].userName.Iv)
 					passwordWithTrash = tripleDesDecrypt(credentials[j].passWord.cipherText, key, credentials[j].passWord.Iv)
 				)
+
 				if len(loginWithTrash) == 0 || len(passwordWithTrash) == 0 {
 					continue
 				}
