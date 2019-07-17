@@ -54,6 +54,10 @@ func internetExplorerModuleStart() ([]common.UrlNamePass, bool) {
 	return internetVaultCreds, true
 }
 
+/**
+	Function that use PowerShell script for extracting data from Internet Explorer Vault.
+	Support Internet Explorer and Edge browser.
+ */
 func InternetExplorerExtractDataRun() common.ExtractCredentialsResult {
 	var Result common.ExtractCredentialsResult
 	var EmptyResult = common.ExtractCredentialsResult{false, Result.Data}
