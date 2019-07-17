@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func getdrives() (r []string) {
+func getDrives() (r []string) {
 	for _, drive := range "ABCDEFGHIJKLMNOPQRSTUVWXYZ" {
 		_, err := os.Open(string(drive) + ":\\")
 		if err == nil {
@@ -16,12 +16,14 @@ func getdrives() (r []string) {
 	return
 }
 
+/**
+Function that find all files with specified suffixes over all drives.
+*/
 func FindFiles(suffixes []string) []string {
 
 	var (
 		interestingFilesList []string
-
-		drives = getdrives()
+		drives = getDrives()
 	)
 
 	for driveNum := range drives {

