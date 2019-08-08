@@ -3,8 +3,8 @@ package sysadmin
 import (
 	"aqwari.net/xml/xmltree"
 	"encoding/base64"
-	"goLazagne/common"
-	"goLazagne/types"
+	"github.com/kerbyj/goLazagne/common"
+	"github.com/kerbyj/goLazagne/types"
 	"io/ioutil"
 	"os"
 	"strings"

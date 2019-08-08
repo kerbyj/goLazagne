@@ -5,8 +5,8 @@ package sysadmin
 //move common to common
 import (
 	"fmt"
-	"goLazagne/common"
-	"goLazagne/types"
+	"github.com/kerbyj/goLazagne/common"
+	"github.com/kerbyj/goLazagne/types"
 	"log"
 	"os"
 	"path/filepath"

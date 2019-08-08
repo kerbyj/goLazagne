@@ -2,8 +2,8 @@ package sysadmin
 
 import (
 	"fmt"
-	"goLazagne/common"
-	"goLazagne/types"
+	"github.com/kerbyj/goLazagne/common"
+	"github.com/kerbyj/goLazagne/types"
 	"gopkg.in/ini.v1"
 	"os"
 	"regexp"

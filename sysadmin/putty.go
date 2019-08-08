@@ -5,8 +5,8 @@ package sysadmin
 //HKCU/Software/*Sessions/#SESSNAME#/PortNumber (it's in hex)
 import (
 	"fmt"
-	"goLazagne/common"
-	"goLazagne/types"
+	"github.com/kerbyj/goLazagne/common"
+	"github.com/kerbyj/goLazagne/types"
 	"golang.org/x/sys/windows/registry"
 	"log"
 	"os/exec"
