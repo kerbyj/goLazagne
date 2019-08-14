@@ -42,7 +42,7 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 	var users []string
 
 	for i := range lines {
-		if strings.Contains(lines[i], "All User") { //TODO check in multiple languages
+		if strings.Contains(lines[i], "Все профили") { //TODO check in multiple languages
 			users = append(users, strings.TrimSpace(strings.Split(lines[i], ":")[1]))
 		}
 	}
@@ -62,7 +62,7 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 		var lines = strings.Split(output, "\r\n")
 
 		for j := range lines {
-			if strings.Contains(lines[j], "Key Content") { //TODO check in multiple languages
+			if strings.Contains(lines[j], "Содержимое ключа") { //TODO check in multiple languages
 				var (
 					dataAdd = common.NamePass{
 						users[i],
