@@ -59,7 +59,7 @@ func puttyInfo(pathToSession string) (string, string, string) {
 }
 
 //extract Putty's username, hostname & key location from registry
-func PuttyExtractor() ([]types.PuttyData, error) {
+func puttyExtractor() ([]types.PuttyData, error) {
 	var keys []types.PuttyData
 	//get the sessions hives' names
 	output, err := exec.Command("powershell",
@@ -86,7 +86,7 @@ func PuttyExtractor() ([]types.PuttyData, error) {
 }
 
 func PuttyExtractDataRun() ([]types.PuttyData, error) {
-	info, err := PuttyExtractor()
+	info, err := puttyExtractor()
 	if err != nil {
 		return info, err
 	}
