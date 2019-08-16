@@ -1,22 +1,11 @@
 package wifi
 
 import (
-	"github.com/aglyzov/charmap"
 	"github.com/kerbyj/goLazagne/common"
-	"os/exec"
 	"strings"
-	"syscall"
 )
 
-func execCommand(command string, params []string) string {
-	cmd_li := exec.Command(command, params...)
-	cmd_li.SysProcAttr = &syscall.SysProcAttr{HideWindow: true} //run CMD in hidden mode
-	output, _ := cmd_li.Output()
-	if output != nil && len(output) > 0 {
-		output = charmap.CP866_to_UTF8(output)
-	}
-	return string(output)
-}
+
 
 /*
 	Function for WiFi credentials extracting. No support for WPA2 Enterprise (see README).
@@ -32,12 +21,13 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 	 */
 
 	params := []string{
+		"netsh",
 		"wlan",
 		"show",
 		"profiles",
 	}
 
-	var output = execCommand("netsh", params)
+	var output = common.ExecCommand("netsh", params)
 	var lines = strings.Split(output, "\r\n")
 	var users []string
 
@@ -58,7 +48,7 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 			"key=clear",
 		}
 
-		var output = execCommand("netsh", paramWifi)
+		var output = common.ExecCommand("netsh", paramWifi)
 		var lines = strings.Split(output, "\r\n")
 
 		for j := range lines {

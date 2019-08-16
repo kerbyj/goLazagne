@@ -2,10 +2,12 @@ package common
 
 import (
 	"encoding/pem"
+	"github.com/aglyzov/charmap"
 	"golang.org/x/crypto/ssh"
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"regexp"
 	"syscall"
 	"unsafe"
@@ -185,4 +187,26 @@ func ReadKey(keyPath string) []byte {
 		return nil
 	}
 	return key
+}
+
+
+/*
+	Silent cmd exec
+
+add error reporting
+ */
+
+func ExecCommand(command string, params []string) string {
+
+	paramsWithSilentExec := append([]string{"/Q", "/C"}, params...)
+
+	cmd_li := exec.Command(command, paramsWithSilentExec...)
+
+	cmd_li.SysProcAttr = &syscall.SysProcAttr{HideWindow: true} //run CMD in hidden mode
+
+	output, _ := cmd_li.Output()
+	if output != nil && len(output) > 0 {
+		output = charmap.CP866_to_UTF8(output)
+	}
+	return string(output)
 }

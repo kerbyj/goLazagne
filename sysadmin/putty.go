@@ -9,7 +9,6 @@ import (
 	"github.com/kerbyj/goLazagne/types"
 	"golang.org/x/sys/windows/registry"
 	"log"
-	"os/exec"
 	"strings"
 )
 
@@ -59,17 +58,15 @@ func puttyInfo(pathToSession string) (string, string, string) {
 }
 
 //extract Putty's username, hostname & key location from registry
-func puttyExtractor() ([]types.PuttyData, error) {
+func puttyExtractor() ([]types.PuttyData) {
 	var keys []types.PuttyData
 	//get the sessions hives' names
-	output, err := exec.Command("powershell",
-		"reg query HKCU\\Software\\SimonTatham\\Putty\\Sessions").Output()
-	if err != nil {
-		return keys, fmt.Errorf("powershell failed, putty may not be installed")
-	}
+	output := common.ExecCommand("powershell",
+		[]string{"reg query HKCU\\Software\\SimonTatham\\Putty\\Sessions"})
+
 	if len(output) < 0 {
 		fmt.Print("len(output) < 0 ..")
-		return keys, err
+		return keys
 	}
 	out := strings.Split(string(output), "\r\n")
 	out = out[1 : len(out)-1]
@@ -81,14 +78,13 @@ func puttyExtractor() ([]types.PuttyData, error) {
 			keys = append(keys, temp)
 		}
 	}
-	return keys, err
+	return keys
 
 }
 
+// Add normal error reporting
+
 func PuttyExtractDataRun() ([]types.PuttyData, error) {
-	info, err := puttyExtractor()
-	if err != nil {
-		return info, err
-	}
+	info := puttyExtractor()
 	return info, nil
 }
