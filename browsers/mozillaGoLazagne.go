@@ -187,7 +187,7 @@ func getMozillaKey(profilePath string, app string) []byte {
 			var entrySalt = sourceData.Data.Data.Entry
 			var cipherT = sourceData.EncryptedPasswdCheck
 			var key = mozillaDecrypt3DES(globalSalt, "", entrySalt, cipherT)
-			log.Println(key)
+			//log.Println(key)
 			return key
 		}
 	}
@@ -256,8 +256,6 @@ func mozillaModuleStart(data AppInfo) ([]common.UrlNamePass, bool) {
 			if len(key) > 24 {
 				key = key[:24]
 			}
-
-			log.Println("key", key)
 
 			if len(credentials) == 0 || len(key) == 0 || key == nil {
 				return nil, false
