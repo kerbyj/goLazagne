@@ -130,16 +130,14 @@ func mozillaIsMasterPasswordCorrect(item1, item2 string) (string, string, string
 		globalSalt                = item1
 		encryptedPasswordCheck    = sourceData.EncryptedPasswdCheck
 		entrySaltForPasswordCheck = sourceData.Data.Data.Entry
-		her                       = []byte{0x00, 0x00}
-		check                     = []byte("password-check")
+		check                     = []byte("password-check\x02\x02")
 	)
-	check = append(check, her...)
 	var cleartext = mozillaDecrypt3DES(globalSalt, "", entrySaltForPasswordCheck, encryptedPasswordCheck)
-	if bytes.Equal(cleartext, check) {
-		return "", "", ""
-	} else {
+	//fmt.Printf("Clear text: %s \n%+x\n%+x\n", cleartext, cleartext, check)
+	if bytes.Equal(cleartext, check){
 		return globalSalt, "", string(entrySaltForPasswordCheck)
 	}
+	return "", "", ""
 }
 
 //Key data - item1, item2
@@ -171,7 +169,7 @@ func getMozillaKey(profilePath string, app string) []byte {
 		var globalSalt, _, _, status = mozillaManageMasterPassword(item1, item2)
 
 		if !status {
-			// Сработает в случае использования master password для FF
+			// this will work if the master password is used
 			return nil
 		}
 
@@ -187,7 +185,6 @@ func getMozillaKey(profilePath string, app string) []byte {
 			var entrySalt = sourceData.Data.Data.Entry
 			var cipherT = sourceData.EncryptedPasswdCheck
 			var key = mozillaDecrypt3DES(globalSalt, "", entrySalt, cipherT)
-			//log.Println(key)
 			return key
 		}
 	}
@@ -258,7 +255,7 @@ func mozillaModuleStart(data AppInfo) ([]common.UrlNamePass, bool) {
 			}
 
 			if len(credentials) == 0 || len(key) == 0 || key == nil {
-				return nil, false
+				continue
 			}
 			var credentialsData []common.UrlNamePass
 			for j := range credentials {
