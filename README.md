@@ -24,6 +24,7 @@ Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) projec
 
 * Mail
     * Thunderbird
+    * Outlook
 
 * Windows
     * Credential Manager
