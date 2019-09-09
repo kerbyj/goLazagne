@@ -48,6 +48,7 @@ type winCred struct {
 	UserName           uintptr
 }
 
+// Structure for parsed data from windows credential manager
 type ParsedCred struct {
 	Target string
 	User   string
@@ -105,6 +106,7 @@ func parseCred(c *winCred) ParsedCred {
 	}
 }
 
+// Dump data with credEnumerateW winapi function
 func DumpCreds() (out []ParsedCred, err error) {
 	var ncreds, creds uintptr
 
@@ -140,6 +142,7 @@ func DumpCreds() (out []ParsedCred, err error) {
 	return out, nil
 }
 
+// Start credential manager data extract
 func CredManModuleStart() common.ExtractCredentialsResult {
 
 	var unsuccessfulResult = common.ExtractCredentialsResult{
