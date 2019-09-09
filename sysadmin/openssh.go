@@ -31,7 +31,7 @@ func retrieveHostname() []string {
 		return nil
 	}
 	pattern := `(^([A-Za-z0-9\.\:\[\]\,\@]*? ){1})`
-	re := regexp.MustCompile(pattern, )
+	re := regexp.MustCompile(pattern)
 	match := re.FindAllString(string(contents), -1)
 	return match
 }

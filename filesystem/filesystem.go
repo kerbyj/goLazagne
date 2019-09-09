@@ -23,7 +23,7 @@ func FindFiles(suffixes []string) []string {
 
 	var (
 		interestingFilesList []string
-		drives = getDrives()
+		drives               = getDrives()
 	)
 
 	for driveNum := range drives {

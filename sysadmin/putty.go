@@ -57,11 +57,11 @@ func puttyInfo(pathToSession string) (string, string, string) {
 }
 
 //extract Putty's username, hostname & key location from registry
-func puttyExtractor() ([]types.PuttyData) {
+func puttyExtractor() []types.PuttyData {
 	var keys []types.PuttyData
 	//get the sessions hives' names
 	output := common.ExecCommand("cmd",
-		[]string{"powershell", "reg","query","HKCU\\Software\\SimonTatham\\Putty\\Sessions"})
+		[]string{"powershell", "reg", "query", "HKCU\\Software\\SimonTatham\\Putty\\Sessions"})
 
 	if len(output) <= 0 {
 		return keys

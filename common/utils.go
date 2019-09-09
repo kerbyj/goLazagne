@@ -92,15 +92,15 @@ func (b *DATA_BLOB) ToByteArray() []byte {
 // Function for decrypting data that has been encrypted with CryptProtectData from win cryptapi
 func Win32CryptUnprotectData(cipherText string, entropy bool) string {
 	var (
-		dllcrypt32= syscall.NewLazyDLL("Crypt32.dll")
-		dllkernel32= syscall.NewLazyDLL("Kernel32.dll")
+		dllcrypt32  = syscall.NewLazyDLL("Crypt32.dll")
+		dllkernel32 = syscall.NewLazyDLL("Kernel32.dll")
 
-		procDecryptData= dllcrypt32.NewProc("CryptUnprotectData")
-		procLocalFree= dllkernel32.NewProc("LocalFree")
+		procDecryptData = dllcrypt32.NewProc("CryptUnprotectData")
+		procLocalFree   = dllkernel32.NewProc("LocalFree")
 	)
 
 	var outblob DATA_BLOB
-	var inblob= NewBlob([]byte(cipherText))
+	var inblob = NewBlob([]byte(cipherText))
 
 	procDecryptData.Call(uintptr(unsafe.Pointer(inblob)), 0, 0, 0, 0, 0, uintptr(unsafe.Pointer(&outblob)))
 
@@ -163,7 +163,6 @@ func ReadKey(keyPath string) []byte {
 	}
 	return key
 }
-
 
 // Silent cmd exec. When using this function, the user will not see the CMD window
 func ExecCommand(command string, params []string) string {

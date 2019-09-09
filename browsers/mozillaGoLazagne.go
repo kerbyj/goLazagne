@@ -134,7 +134,7 @@ func mozillaIsMasterPasswordCorrect(item1, item2 string) (string, string, string
 	)
 	var cleartext = mozillaDecrypt3DES(globalSalt, "", entrySaltForPasswordCheck, encryptedPasswordCheck)
 	//fmt.Printf("Clear text: %s \n%+x\n%+x\n", cleartext, cleartext, check)
-	if bytes.Equal(cleartext, check){
+	if bytes.Equal(cleartext, check) {
 		return globalSalt, "", string(entrySaltForPasswordCheck)
 	}
 	return "", "", ""

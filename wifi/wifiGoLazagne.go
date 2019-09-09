@@ -7,16 +7,16 @@ import (
 
 /*
 	Function for WiFi credentials extracting. No support for WPA2 Enterprise (see README).
- */
+*/
 func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 
 	/**
-		For WiFI credentials extract we use system utility "netsh"
+	For WiFI credentials extract we use system utility "netsh"
 
-		1. Get profile names (SSID) - `netsh wlan show profiles`
-		2. Get saved password for wifi access point - `netsh wlan show profile SSID key=clear`
-			key=clear parameter used to display the password in clear text
-	 */
+	1. Get profile names (SSID) - `netsh wlan show profiles`
+	2. Get saved password for wifi access point - `netsh wlan show profile SSID key=clear`
+		key=clear parameter used to display the password in clear text
+	*/
 
 	params := []string{
 		"netsh",

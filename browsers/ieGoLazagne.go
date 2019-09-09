@@ -28,7 +28,7 @@ func internetExplorerModuleStart() ([]common.UrlNamePass, bool) {
 
 	var internetVaultCreds []common.UrlNamePass
 
-	for i:=range linesOfCreds{
+	for i := range linesOfCreds {
 		if len(linesOfCreds[i]) == 0 {
 			continue
 		}
@@ -44,14 +44,14 @@ func internetExplorerModuleStart() ([]common.UrlNamePass, bool) {
 	if len(internetVaultCreds) == 0 {
 		return nil, false
 	}
-	
+
 	return internetVaultCreds, true
 }
 
 /**
-	Function that use PowerShell script for extracting data from Internet Explorer Vault.
-	Support Internet Explorer and Edge browser.
- */
+Function that use PowerShell script for extracting data from Internet Explorer Vault.
+Support Internet Explorer and Edge browser.
+*/
 func InternetExplorerExtractDataRun() common.ExtractCredentialsResult {
 	var Result common.ExtractCredentialsResult
 	var EmptyResult = common.ExtractCredentialsResult{false, Result.Data}
