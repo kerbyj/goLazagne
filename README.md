@@ -1,5 +1,10 @@
 # goLazagne
 
+
+<p align="center">
+  <img src="https://github.com/kerbyj/goLazagne/raw/master/images/mascot.jpeg" width="600">
+</p>
+
 ---
 ## ⚠️ Disclaimer
 
