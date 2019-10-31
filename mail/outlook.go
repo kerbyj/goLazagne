@@ -77,8 +77,10 @@ func OutlookRun() (Credentials []ExtractedData, err error) {
 		`Software\Microsoft\Windows NT\CurrentVersion\Windows Messaging Subsystem\Profiles\Outlook`,
 		`Software\Microsoft\Windows Messaging Subsystem\Profiles`,
 		`Software\Microsoft\Office\16.0\Outlook\Profiles\Outlook`} //Registry paths for different versions of Outlook
+
+	var AllValues []ExtractedData
 	for _, path := range baseRegistryPaths {
-		var AllValues []ExtractedData
+
 		var err error
 		mainSubkeys, _, status := getSubkeys(path)
 		if status == false {
@@ -153,6 +155,6 @@ func OutlookRun() (Credentials []ExtractedData, err error) {
 			}
 
 		}
-		return AllValues, err
 	}
+	return AllValues, err
 }
