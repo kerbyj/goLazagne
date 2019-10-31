@@ -30,14 +30,14 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 	var users []string
 
 	for _, line := range lines {
-		if strings.Contains(line, "Все профили") { //TODO check in multiple languages
+		if strings.Contains(line, "Все профили") || strings.Contains(line, "All profile") {
 			users = append(users, strings.TrimSpace(strings.Split(line, ":")[1]))
 		}
 	}
 
 	var Result common.ExtractCredentialsNamePass
 	var data []common.NamePass
-	
+
 	for i := 0; i < len(users); i++ {
 		var paramWifi = []string{
 			"netsh",
