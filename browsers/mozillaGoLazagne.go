@@ -24,7 +24,10 @@ type AppInfo struct {
 	path string
 }
 
-//Структуры для asn1.Unmarshal
+/*
+	Structs for asn1.Unmarshal
+	Really magic thing
+ */
 type AsnSourceDataMasterPassword struct {
 	Data struct {
 		ObjIdent asn1.ObjectIdentifier
@@ -126,7 +129,8 @@ func mozillaIsMasterPasswordCorrect(item1, item2 string) (string, string, string
 		check                     = []byte("password-check\x02\x02")
 	)
 	var cleartext = mozillaDecrypt3DES(globalSalt, "", entrySaltForPasswordCheck, encryptedPasswordCheck)
-	//fmt.Printf("Clear text: %s \n%+x\n%+x\n", cleartext, cleartext, check)
+
+	// Check for master password using password-check constant
 	if bytes.Equal(cleartext, check) {
 		return globalSalt, "", string(entrySaltForPasswordCheck)
 	}
@@ -144,15 +148,24 @@ func mozillaManageMasterPassword(item1, item2 string) (string, string, string, b
 }
 
 func getMozillaKey(profilePath string, app string) []byte {
+
+	/*
+		Open key4.db database. What about key3.db support?
+		//todo add parser for last mozilla password storage standard
+	 */
+
 	db, err := sql.Open("sqlite3", profilePath+"\\key4.db")
 	if err != nil {
 		return nil
 	}
+
 	rows, err := db.Query("SELECT item1, item2 FROM metadata WHERE id = 'password';")
+
 	var item1, item2 string
 	if err != nil {
 		return nil
 	}
+
 	for rows.Next() {
 		err := rows.Scan(&item1, &item2)
 		if err != nil {
@@ -163,6 +176,7 @@ func getMozillaKey(profilePath string, app string) []byte {
 
 		if !status {
 			// this will work if the master password is used
+			// need to create extractor of encrypted passwords
 			return nil
 		}
 
@@ -212,10 +226,6 @@ func mozillaDecodeLoginData(data string) decodedLogindata {
 }
 
 func mozillaGetLoginData(profile string) []mozillaLoginData {
-	_, err := sql.Open("sqlite3", profile+"\\signons.sqlite")
-	if err != nil {
-		return nil
-	}
 	var file, errFile = ioutil.ReadFile(profile + "\\logins.json")
 	if errFile != nil {
 		return nil
@@ -247,14 +257,15 @@ func mozillaModuleStart(data AppInfo) ([]common.UrlNamePass, bool) {
 				key = key[:24]
 			}
 
-			if len(credentials) == 0 || len(key) == 0 || key == nil {
+			if len(credentials) == 0 || len(key) == 0 {
 				continue
 			}
+
 			var credentialsData []common.UrlNamePass
-			for j := range credentials {
+			for _, credential := range credentials {
 				var (
-					loginWithTrash    = tripleDesDecrypt(credentials[j].userName.cipherText, key, credentials[j].userName.Iv)
-					passwordWithTrash = tripleDesDecrypt(credentials[j].passWord.cipherText, key, credentials[j].passWord.Iv)
+					loginWithTrash    = tripleDesDecrypt(credential.userName.cipherText, key, credential.userName.Iv)
+					passwordWithTrash = tripleDesDecrypt(credential.passWord.cipherText, key, credential.passWord.Iv)
 				)
 
 				if len(loginWithTrash) == 0 || len(passwordWithTrash) == 0 {
@@ -266,10 +277,10 @@ func mozillaModuleStart(data AppInfo) ([]common.UrlNamePass, bool) {
 					login          = string(loginWithTrash[:loginLength-int(loginWithTrash[loginLength-1])])
 					password       = string(passwordWithTrash[:passwordLength-int(passwordWithTrash[passwordLength-1])])
 				)
-				if data.name == "TB" {
-					credentials[j].hostname = "mail"
+				if data.name == "TB" { //todo remove this hardcoded condition
+					credential.hostname = "mail"
 				}
-				credentialsData = append(credentialsData, common.UrlNamePass{credentials[j].hostname, login, password})
+				credentialsData = append(credentialsData, common.UrlNamePass{credential.hostname, login, password})
 			}
 			return credentialsData, true
 		}
@@ -290,14 +301,15 @@ func MozillaExtractDataRun(targetType string) common.ExtractCredentialsResult {
 	var Result common.ExtractCredentialsResult
 	var EmptyResult = common.ExtractCredentialsResult{false, Result.Data}
 
-	for i := range mozillaPathsUserData {
-		if _, err := os.Stat(mozillaPathsUserData[i].path); err == nil {
-			var data, success = mozillaModuleStart(mozillaPathsUserData[i])
+	for _, mozillaPath := range mozillaPathsUserData {
+		if _, err := os.Stat(mozillaPath.path); err == nil {
+			var data, success = mozillaModuleStart(mozillaPath)
 			if success {
 				Result.Data = append(Result.Data, data...)
 			}
 		}
 	}
+	
 	if len(Result.Data) == 0 {
 		return EmptyResult
 	} else {
