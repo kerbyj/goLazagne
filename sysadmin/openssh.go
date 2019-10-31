@@ -42,6 +42,7 @@ func extractUnprotectedPrivKeys() []string {
 	//default key files path %USERPROFILE%/.SSH
 	keyFilesLocation := common.UserHome + "/.SSH"
 	folder, err := os.Stat(keyFilesLocation)
+
 	//check if key files path is present
 	if err == nil && folder.IsDir() {
 		err = filepath.Walk(keyFilesLocation, func(path string, info os.FileInfo, err error) error {

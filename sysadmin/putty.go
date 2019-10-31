@@ -60,22 +60,25 @@ func puttyInfo(pathToSession string) (string, string, string) {
 func puttyExtractor() []types.PuttyData {
 	var keys []types.PuttyData
 	//get the sessions hives' names
-	output := common.ExecCommand("cmd",
+	sessions := common.ExecCommand("cmd",
 		[]string{"powershell", "reg", "query", "HKCU\\Software\\SimonTatham\\Putty\\Sessions"})
 
-	if len(output) <= 0 {
+	if len(sessions) <= 0 {
 		return keys
 	}
-	out := strings.Split(string(output), "\r\n")
-	out = out[1 : len(out)-1]
-	for i := range out {
-		out[i] = out[i][18:]
-		hostName, userName, key := puttyInfo(out[i])
+	sessionList := strings.Split(string(sessions), "\r\n")
+
+	sessionList = sessionList[1 : len(sessionList)-1]
+
+	for _, session := range sessionList {
+		session = session[18:]
+		hostName, userName, key := puttyInfo(session)
 		if key != "" {
 			temp := types.PuttyData{HostName: hostName, UserName: userName, Key: key}
 			keys = append(keys, temp)
 		}
 	}
+
 	return keys
 
 }

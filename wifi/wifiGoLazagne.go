@@ -29,14 +29,15 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 	var lines = strings.Split(output, "\r\n")
 	var users []string
 
-	for i := range lines {
-		if strings.Contains(lines[i], "Все профили") { //TODO check in multiple languages
-			users = append(users, strings.TrimSpace(strings.Split(lines[i], ":")[1]))
+	for _, line := range lines {
+		if strings.Contains(line, "Все профили") { //TODO check in multiple languages
+			users = append(users, strings.TrimSpace(strings.Split(line, ":")[1]))
 		}
 	}
 
 	var Result common.ExtractCredentialsNamePass
 	var data []common.NamePass
+	
 	for i := 0; i < len(users); i++ {
 		var paramWifi = []string{
 			"netsh",
@@ -50,12 +51,12 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 		var output = common.ExecCommand("cmd", paramWifi)
 		var lines = strings.Split(output, "\r\n")
 
-		for j := range lines {
-			if strings.Contains(lines[j], "Содержимое ключа") { //TODO check in multiple languages
+		for i, line := range lines {
+			if strings.Contains(line, "Содержимое ключа") || strings.Contains(line, "Key content")  { //todo verify this part of code
 				var (
 					dataAdd = common.NamePass{
-						users[i],
-						strings.TrimSpace(strings.Split(lines[j], ":")[1]),
+						Name: users[i],
+						Pass: strings.TrimSpace(strings.Split(line, ":")[1]),
 					}
 				)
 				data = append(data, dataAdd)
@@ -66,6 +67,7 @@ func WifiExtractDataRun() common.ExtractCredentialsNamePass {
 			return Result
 		}
 	}
+
 	Result.Data = data
 	Result.Success = true
 	return Result

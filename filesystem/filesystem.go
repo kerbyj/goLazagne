@@ -29,17 +29,17 @@ func FindFiles(suffixes []string) []string {
 	for driveNum := range drives {
 		var root = drives[driveNum] + ":\\\\"
 
-		var _ = filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		var _ = filepath.Walk(root, func(path string, fileEntry os.FileInfo, err error) error {
 			if err != nil {
 				return nil
 			}
 
-			if info.IsDir() {
+			if fileEntry.IsDir() {
 				return nil
 			}
 
 			for i := range suffixes {
-				if strings.HasSuffix(info.Name(), suffixes[i]) {
+				if strings.HasSuffix(fileEntry.Name(), suffixes[i]) {
 					interestingFilesList = append(interestingFilesList, path)
 				}
 			}

@@ -78,15 +78,20 @@ func MobaExtractDataRun() ([]types.MobaData, error) {
 		Insensitive:              true,
 		AllowShadows:             false,
 	}, userPath+"/Documents/MobaXterm/MobaXterm.ini")
+
 	if err != nil {
 		fmt.Println("Error with ini reader: ", err)
 		return nil, err
 	}
 	sections := iniRaw.SectionStrings()
-	var sessionsInfo []types.MobaData
-	var tempSessInfo types.MobaData
-	//sessionsInfo := [6]types.MobaData{}
-	var info = make(map[string][]string)
+
+	var (
+		sessionsInfo []types.MobaData
+		tempSessInfo types.MobaData
+
+		info = make(map[string][]string)
+	)
+
 	for _, value := range sections {
 		if strings.Contains(value, "bookmarks") {
 			section := iniRaw.Section(value)
