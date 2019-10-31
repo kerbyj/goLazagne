@@ -29,7 +29,7 @@ Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) projec
 
 * Mail
     * Thunderbird
-    * Outlook
+    * [TBD] Outlook 
 
 * Windows
     * Credential Manager
@@ -46,7 +46,7 @@ Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) projec
 
 - [ ] WPA2 Enterprise. The main difficulty is that we need an privilege escalation. Read more in zc00l [research](https://0x00-0x00.github.io/research/2018/11/06/Recovering-Plaintext-Domain-Credentials-From-WPA2-Enterprise-on-a-compromised-host.html).
 - [ ] Windows vault
-- [ ] Outlook
+- [ ] Full outlook support
 - [ ] Git 
     
 ## Special thanks
