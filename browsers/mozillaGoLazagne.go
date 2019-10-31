@@ -309,7 +309,7 @@ func MozillaExtractDataRun(targetType string) common.ExtractCredentialsResult {
 			}
 		}
 	}
-	
+
 	if len(Result.Data) == 0 {
 		return EmptyResult
 	} else {

