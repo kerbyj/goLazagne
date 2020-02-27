@@ -78,7 +78,7 @@ var (
 	chromePathsUserData = []string{
 		common.LocalAppData + "\\Google\\Chrome\\User Data",        // Google chrome
 		common.AppData + "\\Opera Software\\Opera Stable",          // Opera
-		common.LocalAppData + "\\Yandex\\YandexBrowser\\User Data", // Yandex browser
+		// common.LocalAppData + "\\Yandex\\YandexBrowser\\User Data", // Yandex browser
 		common.LocalAppData + "\\Vivaldi\\User Data",               // Vivaldi
 		common.LocalAppData + "\\CentBrowser\\User Data",           // CentBrowser
 		common.LocalAppData + "\\Amigo\\User Data",                 // Amigo (RIP)
