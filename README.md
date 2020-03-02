@@ -23,7 +23,7 @@ Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) projec
 ## Supported features
 
 * Browsers
-	* Chromium-based
+	* Chromium-based (<80)
 	* Mozilla Firefox
 	* Internet Explorer and Edge
 
@@ -44,6 +44,7 @@ Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) projec
 	
 ## ToDo (sorted by priority level)
 
+- [ ] Google Chrome AES-GCM encryption
 - [ ] WPA2 Enterprise. The main difficulty is that we need an privilege escalation. Read more in zc00l [research](https://0x00-0x00.github.io/research/2018/11/06/Recovering-Plaintext-Domain-Credentials-From-WPA2-Enterprise-on-a-compromised-host.html).
 - [ ] Windows vault
 - [ ] Full outlook support
