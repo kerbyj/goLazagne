@@ -54,6 +54,17 @@ Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) projec
 
 * [Nikolay Edigaryev](https://github.com/edigaryev) for [credman](https://github.com/kerbyj/goLazagne/blob/master/windows/credman.go) module
 
+## Donation
+
+I don't have much time to support the project, but if you want to support me and give me an incentive to add features, you can support me with a donation. I will appreciate a lot: 
+
+Via Donate.Stream: [https://donate.stream/golazagne](https://donate.stream/golazagne)
+
+or
+
+<a href="https://www.buymeacoffee.com/kerby" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+
+
 ## Example
 
 ```go
