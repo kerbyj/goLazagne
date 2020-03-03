@@ -20,6 +20,53 @@ The **goLazagne** is an open source library for golang used to retrieve password
 
 Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) project.
 
+## Install
+
+```
+go get github.com/kerbyj/goLazagne
+```
+
+### Example
+
+```go
+package main
+
+import (
+    "github.com/kerbyj/goLazagne"
+)
+
+func main() {
+
+    var credentials, _ = goLazagne.ExtractAllData()
+    
+    println("Browser creds:", len(credentials.BrowserData))
+    println("Credman creds:", len(credentials.CredmanData))
+    println("Wifi creds:", len(credentials.WifiData))
+    
+    println("\nEnumerating filesystem. Please wait")
+    
+    var interestingFiles = []string{
+    			"ovpn",
+    			"ssh",
+    		}
+    
+    var files = goLazagne.ExtractInterestingFiles(interestingFiles)
+    for fileN := range files {
+        println(files[fileN])
+    }
+
+}
+```
+
+If you want to compile this project on Linux system:
+
+```shell script
+apt install gcc-multilib
+apt install gcc-mingw-w64
+
+CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 go build
+```
+
 ## Supported features
 
 * Browsers
@@ -64,35 +111,3 @@ or
 
 <a href="https://www.buymeacoffee.com/kerby" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
-
-## Example
-
-```go
-package main
-
-import (
-    "github.com/kerbyj/goLazagne"
-)
-
-func main() {
-
-    var credentials, _ = goLazagne.ExtractAllData()
-    
-    println("Browser creds:", len(credentials.BrowserData))
-    println("Credman creds:", len(credentials.CredmanData))
-    println("Wifi creds:", len(credentials.WifiData))
-    
-    println("\nEnumerating filesystem. Please wait")
-    
-    var interestingFiles = []string{
-    			"ovpn",
-    			"ssh",
-    		}
-    
-    var files = goLazagne.ExtractInterestingFiles(interestingFiles)
-    for fileN := range files {
-        println(files[fileN])
-    }
-
-}
-```
