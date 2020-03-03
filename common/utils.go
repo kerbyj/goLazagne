@@ -90,7 +90,7 @@ func (b *DATA_BLOB) ToByteArray() []byte {
 }
 
 // Function for decrypting data that has been encrypted with CryptProtectData from win cryptapi
-func Win32CryptUnprotectData(cipherText string, entropy bool) string {
+func Win32CryptUnprotectData(cipherText string, entropy bool) ([]byte, error) {
 	var (
 		dllcrypt32  = syscall.NewLazyDLL("Crypt32.dll")
 		dllkernel32 = syscall.NewLazyDLL("Kernel32.dll")
@@ -102,10 +102,15 @@ func Win32CryptUnprotectData(cipherText string, entropy bool) string {
 	var outblob DATA_BLOB
 	var inblob = NewBlob([]byte(cipherText))
 
-	procDecryptData.Call(uintptr(unsafe.Pointer(inblob)), 0, 0, 0, 0, 0, uintptr(unsafe.Pointer(&outblob)))
+	checkExist, _, errProcDecryptData := procDecryptData.Call(uintptr(unsafe.Pointer(inblob)), 0, 0, 0, 0, 0, uintptr(unsafe.Pointer(&outblob)))
+
+	if checkExist == 0 {
+		return nil, errProcDecryptData
+	}
 
 	defer procLocalFree.Call(uintptr(unsafe.Pointer(outblob.pbData)))
-	return string(outblob.ToByteArray())
+
+	return outblob.ToByteArray(), nil
 }
 
 /*
