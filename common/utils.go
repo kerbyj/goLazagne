@@ -1,10 +1,14 @@
 package common
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
+	"encoding/base64"
 	"encoding/pem"
 	"github.com/aglyzov/charmap"
 	"golang.org/x/crypto/ssh"
 	"io/ioutil"
+	"github.com/tidwall/gjson"
 	"log"
 	"os"
 	"os/exec"
@@ -116,6 +120,38 @@ func Win32CryptUnprotectData(cipherText string, entropy bool) ([]byte, error) {
 /*
 	End WinAPI decrypt function
 */
+
+// Get AES master key with which passwords will be decrypted later
+// master key is used in DecryptAESPwd
+func GetMasterkey(keyFilePath string) ([]byte, error) {
+	res, _ := ioutil.ReadFile(keyFilePath)
+	keyEncrypted, err := base64.StdEncoding.DecodeString(gjson.Get(string(res), "os_crypt.encrypted_key").String())
+	if err != nil{
+		return []byte{}, err
+	}
+	keyEncrypted = keyEncrypted[5:]
+	masterKey, err := Win32CryptUnprotectData(string(keyEncrypted), false)
+	if err != nil {
+		return []byte{}, err
+	}
+	return masterKey, nil
+}
+
+// Decrypt Chrome v. 80+ password
+func DecryptAESPwd(pwd, masterKey []byte) ([]byte, error) {
+	nonce := pwd[3:15]
+	cryptoBlock := pwd[15:]
+	block, err := aes.NewCipher(masterKey)
+	if err != nil {
+		return nil, err
+	}
+	blockMode, _ := cipher.NewGCM(block)
+	decryptedData, err := blockMode.Open(nil, nonce, cryptoBlock, nil)
+	if err != nil {
+		return nil, err
+	}
+	return decryptedData, nil
+}
 
 // Check key for RFC 1421 compliance.
 func OpensshKeyCheck(key []byte) bool {
