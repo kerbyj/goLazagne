@@ -70,7 +70,7 @@ CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows 
 ## Supported features
 
 * Browsers
-	* Chromium-based (<80)
+	* Chromium-based
 	* Mozilla Firefox
 	* Internet Explorer and Edge
 
