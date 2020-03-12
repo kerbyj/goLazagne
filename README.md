@@ -91,7 +91,6 @@ CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows 
 	
 ## ToDo (sorted by priority level)
 
-- [ ] Google Chrome AES-GCM encryption
 - [ ] WPA2 Enterprise. The main difficulty is that we need an privilege escalation. Read more in zc00l [research](https://0x00-0x00.github.io/research/2018/11/06/Recovering-Plaintext-Domain-Credentials-From-WPA2-Enterprise-on-a-compromised-host.html).
 - [ ] Windows vault
 - [ ] Full outlook support
