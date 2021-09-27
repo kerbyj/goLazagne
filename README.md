@@ -1,12 +1,11 @@
 # goLazagne
 
-
 <p align="center">
   <img src="https://github.com/kerbyj/goLazagne/raw/master/images/mascot.jpeg" width="600">
 </p>
 
 ---
-## ⚠️ Disclaimer
+## ⚠ Disclaimer
 
 1. All information provided in this project is for educational purposes only and can not be used for law violation or personal gain.
 2. The authors of this project are not responsible for any possible harm caused by the materials of this project.
@@ -22,7 +21,7 @@ Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) projec
 
 ## Install
 
-```
+```bash
 go get github.com/kerbyj/goLazagne
 ```
 
@@ -64,7 +63,7 @@ If you want to compile this project on Linux system:
 apt install gcc-multilib
 apt install gcc-mingw-w64
 
-CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 go build
+CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 go build -buildmode=exe
 ```
 
 ## Supported features
@@ -91,6 +90,7 @@ CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows 
 	
 ## ToDo (sorted by priority level)
 
+- [ ] Rewrite Mozilla extractor
 - [ ] WPA2 Enterprise. The main difficulty is that we need an privilege escalation. Read more in zc00l [research](https://0x00-0x00.github.io/research/2018/11/06/Recovering-Plaintext-Domain-Credentials-From-WPA2-Enterprise-on-a-compromised-host.html).
 - [ ] Windows vault
 - [ ] Full outlook support
@@ -99,14 +99,3 @@ CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows 
 ## Special thanks
 
 * [Nikolay Edigaryev](https://github.com/edigaryev) for [credman](https://github.com/kerbyj/goLazagne/blob/master/windows/credman.go) module
-
-## Donation
-
-I don't have much time to support the project, but if you want to support me and give me an incentive to add features, you can support me with a donation. I will appreciate a lot: 
-
-Via Donate.Stream: [https://donate.stream/golazagne](https://donate.stream/golazagne)
-
-or
-
-<a href="https://www.buymeacoffee.com/kerby" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
-
