@@ -22,7 +22,7 @@ Inspired by AlessandroZ [LaZagne](https://github.com/AlessandroZ/LaZagne) projec
 ## Install
 
 ```bash
-go get github.com/kerbyj/goLazagne
+go install github.com/kerbyj/goLazagne@latest
 ```
 
 ### Example
